@@ -10,12 +10,14 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private Texture image;
 
+    //runs once on start-up
     @Override
     public void create() {
         batch = new SpriteBatch();
         image = new Texture("libgdx.png");
     }
 
+    //per frame behaviour
     @Override
     public void render() {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
@@ -24,6 +26,7 @@ public class Main extends ApplicationAdapter {
         batch.end();
     }
 
+    //runs once at the end of the program
     @Override
     public void dispose() {
         batch.dispose();
