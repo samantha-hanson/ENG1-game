@@ -13,4 +13,8 @@ public abstract class AbstractEntity {
     public void draw(SpriteBatch batch){
         batch.draw(this.sprite, this.pos.x, this.pos.y);
     }
+
+    public Vector2 getPos(){
+        return this.pos;
+    }
 }

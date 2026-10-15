@@ -4,14 +4,15 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+import uk.ac.york.eng1.geese.entities.NPC.Goose;
 import uk.ac.york.eng1.geese.entities.Player;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
-    private Texture image;
-
     private Player player;
+    private Goose goose;
+
     //runs once on start-up
     @Override
     public void create() {
@@ -22,6 +23,14 @@ public class Main extends ApplicationAdapter {
             10,
             "playerdummy.png"
         );
+
+        goose = new Goose(
+            300,
+            300,
+            2,
+            "goosedummy.png",
+            300
+        );
     }
 
     //per frame behaviour
@@ -31,8 +40,12 @@ public class Main extends ApplicationAdapter {
         batch.begin();
 
         player.movePlayer();
-        player.draw(batch);
 
+        goose.updateStatus(player);
+        goose.moveNPC();
+
+        player.draw(batch);
+        goose.draw(batch);
         batch.end();
     }
 
