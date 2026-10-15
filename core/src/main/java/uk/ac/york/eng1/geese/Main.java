@@ -1,6 +1,8 @@
 package uk.ac.york.eng1.geese;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -29,7 +31,7 @@ public class Main extends ApplicationAdapter {
             300,
             2,
             "goosedummy.png",
-            300
+            200
         );
     }
 

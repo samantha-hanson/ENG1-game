@@ -11,12 +11,14 @@ public abstract class AbstractNPC extends AbstractEntity {
     protected String status = "idle";
     protected float visualRadius;
 
+    private Vector2 tempMoveDir = new Vector2(0, 0);
+    private float moveScale;
     public void moveNPC(){
-        float dirX = Math.signum(this.targetPos.x - this.pos.x);
-        float dirY = Math.signum(this.targetPos.y - this.pos.y);
-
-        this.pos.x += (this.vel * dirX);
-        this.pos.y += (this.vel * dirY);
+        float distance = this.pos.dst(this.targetPos);
+        moveScale = Math.min(distance, this.vel);
+        this.tempMoveDir.set(this.targetPos).sub(this.pos);//use temp variable to prevent in place altering of target pos
+        this.tempMoveDir.nor().scl(moveScale);
+        this.pos.add(this.tempMoveDir);
     }
     public abstract void updateStatus(AbstractEntity entity);
 }

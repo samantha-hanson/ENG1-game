@@ -15,14 +15,34 @@ public class Goose extends AbstractNPC{
         this.targetPos = new Vector2(this.pos);
     }
 
+    public Vector2 getTargetPos(){
+        return this.targetPos;
+    }
     @Override
     public void updateStatus(AbstractEntity entity) {
         Vector2 entPos = entity.getPos();
         float distance = this.pos.dst(entPos);
 
-        if(distance <= this.visualRadius){
+        //check if the entity is within sight and approach
+        if (distance <= this.visualRadius) {
             this.status = "targeting";
             this.targetPos.set(entPos);
+        } else {
+            if (this.status.equals("targeting")) {
+                this.status = "idle";
+            }
+
+            //check if the goose has reached some idling wander, and update its target
+            //use epsilon to account for floating point nonsense and math.random to let the goose sit still
+            if (this.pos.epsilonEquals(this.targetPos, 0.0001f) && Math.random() > 0.975f) {
+                float wanderDistMax = 200f;
+                float wanderDistMin = 50f;
+
+                //calculate a position to wander to as a percentage of some range
+                this.targetPos.setToRandomDirection()
+                    .scl((float) (wanderDistMin + Math.random() * (wanderDistMax - wanderDistMin)))
+                    .add(this.pos);
+            }
         }
     }
 }
