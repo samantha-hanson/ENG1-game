@@ -4,17 +4,24 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+import uk.ac.york.eng1.geese.entities.Player;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private Texture image;
 
+    private Player player;
     //runs once on start-up
     @Override
     public void create() {
         batch = new SpriteBatch();
-        image = new Texture("libgdx.png");
+        player = new Player(
+            100,
+            100,
+            10,
+            "playerdummy.png"
+        );
     }
 
     //per frame behaviour
@@ -22,7 +29,10 @@ public class Main extends ApplicationAdapter {
     public void render() {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         batch.begin();
-        batch.draw(image, 140, 210);
+
+        player.movePlayer();
+        player.draw(batch);
+
         batch.end();
     }
 
@@ -30,6 +40,5 @@ public class Main extends ApplicationAdapter {
     @Override
     public void dispose() {
         batch.dispose();
-        image.dispose();
     }
 }
