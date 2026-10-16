@@ -12,12 +12,15 @@ public abstract class AbstractNPC extends AbstractEntity {
     protected String status = "idle";
     protected float visualRadius;
 
+    //create temporary locations to reduce memory initialisation in render loop and prevent in-place alteration.
     private Vector2 tempMoveDir = new Vector2(0, 0);
+
     private float moveScale;
+
     public void moveNPC(){
         float distance = this.pos.dst(this.targetPos);
-        moveScale = Math.min(distance, this.vel);
-        this.tempMoveDir.set(this.targetPos).sub(this.pos);//use temp variable to prevent in place altering of target pos
+        moveScale = Math.min(distance, this.vel);//use moveScale to prevent overshoot and consequent jittering -> very ugly
+        this.tempMoveDir.set(this.targetPos).sub(this.pos);
         this.tempMoveDir.nor().scl(moveScale);
         this.pos.add(this.tempMoveDir);
 

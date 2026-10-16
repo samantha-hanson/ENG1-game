@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 
 public abstract class AbstractEntity {
     protected Vector2 pos;
-
     protected float vel;
     protected Texture sprite;
 
@@ -24,7 +23,6 @@ public abstract class AbstractEntity {
         mapBoundFloor = floor;
     }
     public void draw(SpriteBatch batch){
-
         //batch draws sprite with the position passed as the bottom-left corner, so offset to draw center.
         batch.draw(this.sprite, this.pos.x - (this.sprite.getWidth() / 2f), this.pos.y - (this.sprite.getHeight() / 2f));
     }

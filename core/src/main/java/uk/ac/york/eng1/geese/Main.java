@@ -20,7 +20,8 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
 
     private Player player;
-    private Goose goose;
+    private Goose goose1;
+    private Goose goose2;
 
     private OrthographicCamera camera;
 
@@ -53,12 +54,20 @@ public class Main extends ApplicationAdapter {
             "playerdummy.png"
         );
 
-        goose = new Goose(
+        goose1 = new Goose(
             300,
             300,
             2,
             "goosedummy.png",
-            200
+            300
+        );
+
+        goose2 = new Goose(
+            400,
+            400,
+            2,
+            "goosedummy.png",
+            300
         );
     }
 
@@ -78,11 +87,16 @@ public class Main extends ApplicationAdapter {
         batch.begin();
         player.movePlayer();
 
-        goose.updateStatus(player);
-        goose.moveNPC();
+        goose1.updateStatus(player);
+        goose1.moveNPC();
+
+        goose2.updateStatus(player);
+        goose2.moveNPC();
 
         player.draw(batch);
-        goose.draw(batch);
+        goose1.draw(batch);
+        goose2.draw(batch);
+
         batch.end();
         //----------batch ends----------
     }
