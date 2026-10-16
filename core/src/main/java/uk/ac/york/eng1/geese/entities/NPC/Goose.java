@@ -1,6 +1,7 @@
 package uk.ac.york.eng1.geese.entities.NPC;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import uk.ac.york.eng1.geese.entities.AbstractEntity;
 
@@ -42,6 +43,10 @@ public class Goose extends AbstractNPC{
                 this.targetPos.setToRandomDirection()
                     .scl((float) (wanderDistMin + Math.random() * (wanderDistMax - wanderDistMin)))
                     .add(this.pos);
+
+                //clamp the target position to prevent void wandering
+                this.targetPos.x = MathUtils.clamp(this.targetPos.x, mapBoundLeft, mapBoundRight);
+                this.targetPos.y = MathUtils.clamp(this.targetPos.y, mapBoundFloor, mapBoundRoof);
             }
         }
     }

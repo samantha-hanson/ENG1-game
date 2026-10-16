@@ -1,5 +1,6 @@
 package uk.ac.york.eng1.geese.entities.NPC;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import uk.ac.york.eng1.geese.entities.AbstractEntity;
 
@@ -19,6 +20,9 @@ public abstract class AbstractNPC extends AbstractEntity {
         this.tempMoveDir.set(this.targetPos).sub(this.pos);//use temp variable to prevent in place altering of target pos
         this.tempMoveDir.nor().scl(moveScale);
         this.pos.add(this.tempMoveDir);
+
+        this.pos.x = MathUtils.clamp(this.pos.x, mapBoundLeft, mapBoundRight);
+        this.pos.y = MathUtils.clamp(this.pos.y, mapBoundFloor, mapBoundRoof);
     }
     public abstract void updateStatus(AbstractEntity entity);
 }
