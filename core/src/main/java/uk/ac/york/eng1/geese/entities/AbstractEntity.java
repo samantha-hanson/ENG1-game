@@ -11,7 +11,9 @@ public abstract class AbstractEntity {
     protected Texture sprite;
 
     public void draw(SpriteBatch batch){
-        batch.draw(this.sprite, this.pos.x, this.pos.y);
+
+        //batch draws sprite with the position passed as the bottom-left corner, so offset to draw center.
+        batch.draw(this.sprite, this.pos.x - (this.sprite.getWidth() / 2f), this.pos.y - (this.sprite.getHeight() / 2f));
     }
 
     public Vector2 getPos(){
