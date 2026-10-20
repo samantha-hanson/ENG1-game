@@ -5,21 +5,29 @@ import com.badlogic.gdx.math.Vector2;
 import uk.ac.york.eng1.geese.entities.AbstractEntity;
 
 public abstract class AbstractNPC extends AbstractEntity {
-    //target position for when NPC is idling
+    /** The target position for the entity when it is idling */
     protected Vector2 targetPos;
 
+    /** Current state of the entity defaulted to Status.IDLE */
     protected Status status = Status.IDLE;
+
+    /** The radius of vision in which the Entity can detect other entities */
     protected float visualRadius;
 
     //create temporary locations to reduce memory initialisation in render loop and prevent in-place alteration.
     private Vector2 tempMoveDir = new Vector2(0, 0);
-
     private float moveScale;
 
-    public Vector2 getTargetPos(){
-        return this.targetPos;
-    }
-
+    /**
+     * Calculates and moves the NPC according to its velocity.
+     *
+     * <p>
+     *     Once distance between entity and target becomes short enough the speed is capped.
+     *     This is done to prevent overshoot and jittering.
+     *     After the new position is calculated, it is clamped to the world boundaries before being applied to
+     *     the entity.
+     * </p>
+     * */
     public void moveNPC(){
         float distance = this.pos.dst(this.targetPos);
         moveScale = Math.min(distance, this.vel);//use moveScale to prevent overshoot and consequent jittering -> very ugly
@@ -30,5 +38,20 @@ public abstract class AbstractNPC extends AbstractEntity {
         this.pos.x = MathUtils.clamp(this.pos.x, mapBoundLeft, mapBoundRight);
         this.pos.y = MathUtils.clamp(this.pos.y, mapBoundFloor, mapBoundRoof);
     }
+
+    /** get the target position of the entity
+     *
+     * @return The entity's current target position as a Vector2.
+     */
+    public Vector2 getTargetPos(){
+        return this.targetPos;
+    }
+
+    /**
+     * Determines the entity's behaviour and how it's status changes depending on a nearby entity. Should then
+     * update the entity's Status. Can use the entity type for more dynamic behaviour.
+     *
+     * @param entity The entity affecting the behaviour of the calling object.
+     */
     public abstract void updateStatus(AbstractEntity entity);
 }

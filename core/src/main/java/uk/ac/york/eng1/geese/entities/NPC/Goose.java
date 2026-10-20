@@ -7,6 +7,14 @@ import uk.ac.york.eng1.geese.entities.AbstractEntity;
 
 public class Goose extends AbstractNPC{
 
+    /**
+     * Create a Goose object at a given position.
+     *
+     * @param startX initial x-coordinate of the Goose.
+     * @param startY initial y-coordinate of the Goose.
+     * @param vel velocity the Goose entity can move.
+     * @param vision represents the distance the Goose object can detect entities.
+     * */
     public Goose(float startX, float startY, float vel, float vision){
         this.pos = new Vector2(startX, startY);
         this.vel = vel;
@@ -16,6 +24,11 @@ public class Goose extends AbstractNPC{
         this.targetPos = new Vector2(this.pos);
     }
 
+    /**
+     * {@inheritDoc}
+     * implementation note: Goose behaviour currently targets the passed entity if it is within the vision of the goose.
+     * Otherwise, it updates the wandering behaviour of the goose.
+     * */
     @Override
     public void updateStatus(AbstractEntity entity) {
         Vector2 entPos = entity.getPos();
