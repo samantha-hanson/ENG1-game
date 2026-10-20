@@ -8,10 +8,11 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Player extends AbstractEntity{
 
-    public Player(float startX, float startY, float vel, String sprite_path){
+
+    public Player(float startX, float startY, float vel){
         this.pos = new Vector2(startX, startY);
         this.vel = vel;
-        this.sprite = new Texture(sprite_path);
+        this.sprite = new Texture("playerdummy.png");
     }
 
     public void movePlayer(){

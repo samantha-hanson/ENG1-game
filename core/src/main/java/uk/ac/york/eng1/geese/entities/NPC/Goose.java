@@ -7,10 +7,10 @@ import uk.ac.york.eng1.geese.entities.AbstractEntity;
 
 public class Goose extends AbstractNPC{
 
-    public Goose(float startX, float startY, float vel, String spritePath, float vision){
+    public Goose(float startX, float startY, float vel, float vision){
         this.pos = new Vector2(startX, startY);
         this.vel = vel;
-        this.sprite = new Texture(spritePath);
+        this.sprite = new Texture("goosedummy.png");
 
         this.visualRadius = vision;
         this.targetPos = new Vector2(this.pos);

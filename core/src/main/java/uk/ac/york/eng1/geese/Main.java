@@ -50,15 +50,13 @@ public class Main extends ApplicationAdapter {
         player = new Player(
             100,
             100,
-            10,
-            "playerdummy.png"
+            10
         );
 
         goose1 = new Goose(
             300,
             300,
             2,
-            "goosedummy.png",
             300
         );
 
@@ -66,7 +64,6 @@ public class Main extends ApplicationAdapter {
             400,
             400,
             2,
-            "goosedummy.png",
             300
         );
     }
