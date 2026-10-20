@@ -6,10 +6,17 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
+/**
+ * represents the player character, storing necessary information such as the current position of the player.
+ *
+ * <p>
+ *     extends AbstractEntity by adding a way for the player to move the character in the movePlayer method.
+ * </p>
+ */
 public class Player extends AbstractEntity{
 
     /**
-     create a player object at given position.
+     Create a player object at given position. It initialises sprite attribute to the player png.
 
      @param startX initial x-coordinate of the player.
      @param startY initial y-coordinate of the player.

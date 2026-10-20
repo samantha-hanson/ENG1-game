@@ -4,6 +4,14 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import uk.ac.york.eng1.geese.entities.AbstractEntity;
 
+/**
+ * provides the standard for defining non-player entities.
+ *
+ * <p>
+ *     This extends AbstractEntity by providing behaviour that all NPC's will need, such as a target position, visual radius and status.
+ *     also implements the behaviour for a NPC to move, and update its status.
+ * </p>
+ * */
 public abstract class AbstractNPC extends AbstractEntity {
     /** The target position for the entity when it is idling */
     protected Vector2 targetPos;

@@ -5,10 +5,17 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import uk.ac.york.eng1.geese.entities.AbstractEntity;
 
+/**
+ * represents the Goose NPC.
+ *
+ * <p>
+ *     extends AbstractNPC by implementing UpdateStatus to provide behaviour to the goose.
+ * </p>
+ */
 public class Goose extends AbstractNPC{
 
     /**
-     * Create a Goose object at a given position.
+     * Create a Goose object at a given position. Initialises the sprite attribute to the goose png.
      *
      * @param startX initial x-coordinate of the Goose.
      * @param startY initial y-coordinate of the Goose.

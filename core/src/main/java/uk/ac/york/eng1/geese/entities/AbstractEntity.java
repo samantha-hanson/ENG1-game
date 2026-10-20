@@ -4,6 +4,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+/**
+ * Represents the standard for defining future entities.
+ * <p>
+ *     provides implementations of attributes and methods that would be standard across all entities, such as sprite and position.
+ *     Also stores the boundaries for valid entity movement as floats, which inheriting entities will use to prevent out of bound
+ *     behaviour.
+ * </p>
+ */
 public abstract class AbstractEntity {
     /** Current position of the entity*/
     protected Vector2 pos;
@@ -23,7 +31,14 @@ public abstract class AbstractEntity {
     protected static float mapBoundRoof;
     protected static float mapBoundFloor;
 
-    /** Set the world bounds used to constrain entity movement*/
+    /**
+     * Set the world bounds used to constrain entity
+     *
+     * @param floor the lower-boundary of the world.
+     * @param roof the upper-boundary of the world.
+     * @param right the right-boundary of the world.
+     * @param left the left-boundary of the world.
+     * */
     public static void setWorldBounds(float left, float right, float roof, float floor){
         mapBoundLeft = left;
         mapBoundRight = right;
@@ -34,6 +49,8 @@ public abstract class AbstractEntity {
     /**
      * Standardises SpriteBatch draw so that entity is drawn from center, not bottom-left corner.
      * Use when adding any entity to the SpriteBatch.
+     *
+     * @param batch the SpriteBatch the entity is being drawn to.
      * */
     public void draw(SpriteBatch batch){
         //batch draws sprite with the position passed as the bottom-left corner, so offset to draw center.
