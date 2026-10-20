@@ -16,9 +16,6 @@ public class Goose extends AbstractNPC{
         this.targetPos = new Vector2(this.pos);
     }
 
-    public Vector2 getTargetPos(){
-        return this.targetPos;
-    }
     @Override
     public void updateStatus(AbstractEntity entity) {
         Vector2 entPos = entity.getPos();

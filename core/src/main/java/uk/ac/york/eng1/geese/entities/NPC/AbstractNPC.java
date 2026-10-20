@@ -17,6 +17,10 @@ public abstract class AbstractNPC extends AbstractEntity {
 
     private float moveScale;
 
+    public Vector2 getTargetPos(){
+        return this.targetPos;
+    }
+    
     public void moveNPC(){
         float distance = this.pos.dst(this.targetPos);
         moveScale = Math.min(distance, this.vel);//use moveScale to prevent overshoot and consequent jittering -> very ugly
