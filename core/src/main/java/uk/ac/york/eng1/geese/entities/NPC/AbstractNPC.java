@@ -8,8 +8,7 @@ public abstract class AbstractNPC extends AbstractEntity {
     //target position for when NPC is idling
     protected Vector2 targetPos;
 
-    //String 'idle' - 'targeting' - 'scared' lowercase
-    protected String status = "idle";
+    protected Status status = Status.IDLE;
     protected float visualRadius;
 
     //create temporary locations to reduce memory initialisation in render loop and prevent in-place alteration.
@@ -20,7 +19,7 @@ public abstract class AbstractNPC extends AbstractEntity {
     public Vector2 getTargetPos(){
         return this.targetPos;
     }
-    
+
     public void moveNPC(){
         float distance = this.pos.dst(this.targetPos);
         moveScale = Math.min(distance, this.vel);//use moveScale to prevent overshoot and consequent jittering -> very ugly

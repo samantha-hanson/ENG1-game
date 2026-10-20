@@ -23,11 +23,12 @@ public class Goose extends AbstractNPC{
 
         //check if the entity is within sight and approach
         if (distance <= this.visualRadius) {
-            this.status = "targeting";
+            this.status = Status.TARGETING;
             this.targetPos.set(entPos);
+
         } else {
-            if (this.status.equals("targeting")) {
-                this.status = "idle";
+            if (this.status == Status.TARGETING) {
+                this.status = Status.IDLE;
             }
 
             //check if the goose has reached some idling wander, and update its target
