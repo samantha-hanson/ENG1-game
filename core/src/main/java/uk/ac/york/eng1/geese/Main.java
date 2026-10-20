@@ -1,11 +1,14 @@
 package uk.ac.york.eng1.geese;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.utils.ScreenUtils;
+
 import uk.ac.york.eng1.geese.entities.AbstractEntity;
 import uk.ac.york.eng1.geese.entities.NPC.Goose;
 import uk.ac.york.eng1.geese.entities.Player;
@@ -24,17 +27,23 @@ public class Main extends ApplicationAdapter {
     private Goose goose2;
 
     private OrthographicCamera camera;
+    private Viewport viewport;
 
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
     private MapProperties mapProps;
+
+    @Override
+    public void resize(int width, int height){
+        viewport.update(width, height);
+    }
 
     //runs once on start-up
     @Override
     public void create() {
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 600);
+        viewport = new ExtendViewport(800, 600, camera);
 
         //load the map, and constrict entity movement
         map = new TmxMapLoader().load("mapdummy.tmx");
@@ -66,6 +75,9 @@ public class Main extends ApplicationAdapter {
             2,
             300
         );
+
+        // Ensure the viewport is correctly sized to the window
+        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
     }
 
     //per frame behaviour
