@@ -52,8 +52,11 @@ public abstract class AbstractNPC extends AbstractEntity {
         this.tempMoveDir.nor().scl(moveScale);
         this.pos.add(this.tempMoveDir);
 
+        // Clamp position and move hitbox with entity
         this.pos.x = MathUtils.clamp(this.pos.x, mapBoundLeft, mapBoundRight);
         this.pos.y = MathUtils.clamp(this.pos.y, mapBoundFloor, mapBoundRoof);
+
+        this.hitbox.setPosition(this.pos);
     }
 
     /**

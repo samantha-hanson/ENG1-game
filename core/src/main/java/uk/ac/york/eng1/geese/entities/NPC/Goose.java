@@ -2,6 +2,7 @@ package uk.ac.york.eng1.geese.entities.NPC;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import uk.ac.york.eng1.geese.entities.AbstractEntity;
 
@@ -15,7 +16,7 @@ import uk.ac.york.eng1.geese.entities.AbstractEntity;
 public class Goose extends AbstractNPC {
 
     /**
-     * Create a Goose object at a given position. Initialises the sprite attribute to the goose png.
+     * Create a Goose object at a given position. Initialises the sprite attribute to the goose png and the hitbox to sprite size.
      *
      * @param startX initial x-coordinate of the Goose.
      * @param startY initial y-coordinate of the Goose.
@@ -27,6 +28,7 @@ public class Goose extends AbstractNPC {
         this.pos = new Vector2(startX, startY);
         this.vel = vel;
         this.sprite = new Texture("goosedummy.png");
+        this.hitbox = new Rectangle(this.pos.x - (this.sprite.getWidth() / 2f), this.pos.y - (this.sprite.getHeight() / 2f), this.sprite.getWidth(), this.sprite.getHeight());
 
         this.visualRadius = vision;
         this.targetPos = new Vector2(this.pos);
