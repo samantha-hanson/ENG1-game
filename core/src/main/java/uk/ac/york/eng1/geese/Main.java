@@ -111,16 +111,13 @@ public class Main extends ApplicationAdapter {
         batch.begin();
         player.movePlayer();
 
-        goose1.updateStatus(player);
-        goose1.moveNPC();
-
-        goose2.updateStatus(player);
-        goose2.moveNPC();
+        for (Goose goose : gooseArray) {
+            goose.updateStatus(player);
+            goose.draw(batch);
+        }
 
         player.draw(batch);
-        goose1.draw(batch);
-        goose2.draw(batch);
-
+        
         batch.end();
         //----------batch ends----------
 
