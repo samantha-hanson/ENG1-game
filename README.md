@@ -31,3 +31,8 @@ Useful Gradle tasks and flags:
 
 Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
 For example, `core:clean` removes `build` folder only from the `core` project.
+
+## Development Standards
+- All code should follow the [Google style guide](https://google.github.io/styleguide/javaguide.html).
+- Javadoc should be in traditional style.
+- Comments should be in sentence case, with correct grammar and with a single space after the `//`.
