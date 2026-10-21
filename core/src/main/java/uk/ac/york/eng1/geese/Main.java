@@ -18,7 +18,9 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.MapProperties;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
+/**
+ * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
+ */
 public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
 
@@ -34,18 +36,18 @@ public class Main extends ApplicationAdapter {
     private MapProperties mapProps;
 
     @Override
-    public void resize(int width, int height){
+    public void resize(int width, int height) {
         viewport.update(width, height);
     }
 
-    //runs once on start-up
+    // Runs once on start-up
     @Override
     public void create() {
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new ExtendViewport(800, 600, camera);
 
-        //load the map, and constrict entity movement
+        // load the map, and constrict entity movement
         map = new TmxMapLoader().load("mapdummy.tmx");
         mapProps = map.getProperties();
 
@@ -53,7 +55,8 @@ public class Main extends ApplicationAdapter {
         float right = mapProps.get("width", Integer.class) * mapProps.get("tilewidth", Integer.class) * unitScale;
         float roof = mapProps.get("height", Integer.class) * mapProps.get("tileheight", Integer.class) * unitScale;
 
-        AbstractEntity.setWorldBounds(0, right, roof, 0);//left and floor are always 0
+        // Left and floor are always 0
+        AbstractEntity.setWorldBounds(0, right, roof, 0);
         mapRenderer = new OrthogonalTiledMapRenderer(this.map, unitScale);
 
         player = new Player(
@@ -80,12 +83,12 @@ public class Main extends ApplicationAdapter {
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
     }
 
-    //per frame behaviour
+    // Per frame behaviour
     @Override
     public void render() {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
-        //load map and set up camera
+        // Load map and set up camera
         camera.position.set(player.getPos(), 0);
         camera.update();
         mapRenderer.setView(camera);
@@ -109,7 +112,8 @@ public class Main extends ApplicationAdapter {
         batch.end();
         //----------batch ends----------
     }
-    //runs once at the end of the program
+
+    // Runs once at the end of the program
     @Override
     public void dispose() {
         batch.dispose();
