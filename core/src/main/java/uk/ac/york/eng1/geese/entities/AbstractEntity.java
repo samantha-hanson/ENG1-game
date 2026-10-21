@@ -2,6 +2,7 @@ package uk.ac.york.eng1.geese.entities;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -14,20 +15,25 @@ import com.badlogic.gdx.math.Vector2;
  */
 public abstract class AbstractEntity {
     /**
-     * Current position of the entity
+     * Current position of the entity.
      */
     protected Vector2 pos;
 
     /**
-     * the speed the entity can be moved
+     * the speed the entity can be moved.
      */
     protected float vel;
 
     /**
-     * The image drawn to the screen to represent the entity
+     * The image drawn to the screen to represent the entity.
      */
     protected Texture sprite;
 
+    /**
+     * The underlying object used to determine collision.
+     */
+    protected Rectangle hitbox;
+    
     /**
      * to prevent entities from wandering off map, set the world bounds and clamp movement.
      * static since all entities will be bounded to the same loaded map.
@@ -73,4 +79,10 @@ public abstract class AbstractEntity {
     public Vector2 getPos() {
         return this.pos;
     }
+
+    /**
+     * Fetch the current hitbox of the entity
+     * @return Rectangle representing the hitbox.
+     */
+    public Rectangle getHitbox(){ return this.hitbox; }
 }
