@@ -3,6 +3,7 @@ package uk.ac.york.eng1.geese;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -27,6 +28,7 @@ public class Main extends ApplicationAdapter {
     private Player player;
     private Goose goose1;
     private Goose goose2;
+    private Goose[] gooseArray;
 
     private OrthographicCamera camera;
     private Viewport viewport;
@@ -79,6 +81,9 @@ public class Main extends ApplicationAdapter {
             300
         );
 
+        // This should be defined by the goose spawning method
+        gooseArray = new Goose[]{goose1, goose2};
+
         // Ensure the viewport is correctly sized to the window
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
     }
@@ -94,6 +99,13 @@ public class Main extends ApplicationAdapter {
         mapRenderer.setView(camera);
         mapRenderer.render();
         batch.setProjectionMatrix(camera.combined);
+
+        // Check for collision between entities -> this is very inefficient.
+        for (Goose goose : gooseArray){
+            if(player.getHitbox().overlaps(goose.getHitbox())){
+                System.out.println("goose hit player");
+            }
+        }
 
         //----------batch begins----------
         batch.begin();
@@ -111,6 +123,7 @@ public class Main extends ApplicationAdapter {
 
         batch.end();
         //----------batch ends----------
+
     }
 
     // Runs once at the end of the program

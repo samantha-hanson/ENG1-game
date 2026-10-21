@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -16,7 +17,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Player extends AbstractEntity {
 
     /**
-     * Create a player object at given position. It initialises sprite attribute to the player png.
+     * Create a player object at given position. It initialises sprite attribute to the player png and hitbox to sprite size.
      *
      * @param startX initial x-coordinate of the player.
      * @param startY initial y-coordinate of the player.
@@ -26,6 +27,7 @@ public class Player extends AbstractEntity {
         this.pos = new Vector2(startX, startY);
         this.vel = vel;
         this.sprite = new Texture("playerdummy.png");
+        this.hitbox = new Rectangle(this.pos.x - (this.sprite.getWidth() / 2f), this.pos.y - (this.sprite.getHeight() / 2f), this.sprite.getWidth(), this.sprite.getHeight());
     }
 
     /**
@@ -53,5 +55,7 @@ public class Player extends AbstractEntity {
         if (Gdx.input.isKeyPressed(Keys.W)) {
             this.pos.y = MathUtils.clamp(this.pos.y + this.vel, mapBoundFloor, mapBoundRoof);
         }
+
+        this.hitbox.setPosition(this.pos);
     }
 }

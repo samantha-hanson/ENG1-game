@@ -33,7 +33,7 @@ public abstract class AbstractEntity {
      * The underlying object used to determine collision.
      */
     protected Rectangle hitbox;
-    
+
     /**
      * to prevent entities from wandering off map, set the world bounds and clamp movement.
      * static since all entities will be bounded to the same loaded map.
