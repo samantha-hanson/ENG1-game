@@ -113,11 +113,12 @@ public class Main extends ApplicationAdapter {
 
         for (Goose goose : gooseArray) {
             goose.updateStatus(player);
+            goose.moveNPC();
             goose.draw(batch);
         }
 
         player.draw(batch);
-        
+
         batch.end();
         //----------batch ends----------
 
