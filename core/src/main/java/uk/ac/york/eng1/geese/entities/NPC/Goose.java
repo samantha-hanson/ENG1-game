@@ -24,6 +24,7 @@ public class Goose extends AbstractNPC {
      * @param startY initial y-coordinate of the Goose.
      * @param vel    velocity the Goose entity can move.
      * @param vision represents the distance the Goose object can detect entities.
+     * @param gameMap represents the gameMap the Goose object can traverse and interact with
      *
      */
     public Goose(float startX, float startY, float vel, float vision, GameMap gameMap) {

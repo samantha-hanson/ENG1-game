@@ -23,6 +23,7 @@ public class Player extends AbstractEntity {
      * @param startX initial x-coordinate of the player.
      * @param startY initial y-coordinate of the player.
      * @param vel    velocity the player entity can move.
+     * @param gameMap represents the gameMap the Player entity can traverse and interact with
      */
     public Player(float startX, float startY, float vel, GameMap gameMap) {
         this.pos = new Vector2(startX, startY);

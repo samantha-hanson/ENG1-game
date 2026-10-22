@@ -35,8 +35,11 @@ public abstract class AbstractEntity {
      */
     protected Rectangle hitbox;
 
+    /**
+     * the map state that all entities can wander, interact with and traverse.
+     */
     protected GameMap gameMap;
-    
+
     /**
      * Standardises SpriteBatch draw so that entity is drawn from center, not bottom-left corner.
      * Use when adding any entity to the SpriteBatch.
