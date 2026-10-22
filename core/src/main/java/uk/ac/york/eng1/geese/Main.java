@@ -33,11 +33,8 @@ public class Main extends ApplicationAdapter {
     private OrthographicCamera camera;
     private Viewport viewport;
 
-    private TiledMap map;
-    private OrthogonalTiledMapRenderer mapRenderer;
-    private MapProperties mapProps;
-
     private GameMap gameMap;
+    
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -51,17 +48,8 @@ public class Main extends ApplicationAdapter {
         viewport = new ExtendViewport(800, 600, camera);
 
         // load the map, and constrict entity movement
-        map = new TmxMapLoader().load("mapdummy.tmx");
-        mapProps = map.getProperties();
-
         float unitScale = 5f;
-        float right = mapProps.get("width", Integer.class) * mapProps.get("tilewidth", Integer.class) * unitScale;
-        float roof = mapProps.get("height", Integer.class) * mapProps.get("tileheight", Integer.class) * unitScale;
-
         gameMap = new GameMap("mapdummy.tmx", unitScale);
-        // Left and floor are always 0
-        AbstractEntity.setWorldBounds(0, right, roof, 0);
-        mapRenderer = new OrthogonalTiledMapRenderer(this.map, unitScale);
 
         player = new Player(
             100,
@@ -101,8 +89,7 @@ public class Main extends ApplicationAdapter {
         // Load map and set up camera
         camera.position.set(player.getPos(), 0);
         camera.update();
-        mapRenderer.setView(camera);
-        mapRenderer.render();
+        gameMap.setViewAndRender(camera);
         batch.setProjectionMatrix(camera.combined);
 
         // Check for collision between entities -> this is very inefficient.
@@ -123,7 +110,6 @@ public class Main extends ApplicationAdapter {
         }
 
         player.draw(batch);
-
         batch.end();
         //----------batch ends----------
 
@@ -133,9 +119,6 @@ public class Main extends ApplicationAdapter {
     @Override
     public void dispose() {
         batch.dispose();
-        map.dispose();
-        mapRenderer.dispose();
-
         gameMap.dispose();
     }
 }

@@ -33,7 +33,7 @@ public class GameMap {
         this.mapBoundRoof = this.mapProps.get("height", Integer.class) * mapProps.get("tileheight", Integer.class) * unitScale;
     }
 
-    public void SetViewAndRender(OrthographicCamera camera){
+    public void setViewAndRender(OrthographicCamera camera){
         this.renderer.setView(camera);
         this.renderer.render();
     }
