@@ -18,13 +18,11 @@ public class Map {
 
     private TiledMap tileMap;
     private MapProperties mapProps;
-    private float unitScale;
     private MapRenderer renderer;
 
     public Map(String txm_path, float unitScale){
         this.tileMap = new TmxMapLoader().load(txm_path);
         this.mapProps = this.tileMap.getProperties();
-        this.unitScale = unitScale;
         this.renderer = new OrthogonalTiledMapRenderer(this.tileMap, unitScale);
 
 
