@@ -6,6 +6,8 @@ import com.badlogic.gdx.maps.MapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 
 public class Map {
 
@@ -25,6 +27,7 @@ public class Map {
         this.unitScale = unitScale;
         this.renderer = new OrthogonalTiledMapRenderer(this.tileMap, unitScale);
 
+
         // Set world boundaries using loaded map.
         // Left and Floor are always 0.
         this.mapBoundFloor = 0f;
@@ -36,5 +39,10 @@ public class Map {
     public void SetViewAndRender(OrthographicCamera camera){
         this.renderer.setView(camera);
         this.renderer.render();
+    }
+
+    public void clampPosition(Vector2 pos){
+        pos.x = MathUtils.clamp(pos.x, this.mapBoundLeft, this.mapBoundRight);
+        pos.y = MathUtils.clamp(pos.y, this.mapBoundFloor, this.mapBoundRoof);
     }
 }
