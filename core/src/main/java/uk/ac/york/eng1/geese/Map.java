@@ -18,7 +18,7 @@ public class Map {
 
     private TiledMap tileMap;
     private MapProperties mapProps;
-    private MapRenderer renderer;
+    private OrthogonalTiledMapRenderer renderer;
 
     public Map(String txm_path, float unitScale){
         this.tileMap = new TmxMapLoader().load(txm_path);
@@ -42,5 +42,10 @@ public class Map {
     public void clampPosition(Vector2 pos){
         pos.x = MathUtils.clamp(pos.x, this.mapBoundLeft, this.mapBoundRight);
         pos.y = MathUtils.clamp(pos.y, this.mapBoundFloor, this.mapBoundRoof);
+    }
+
+    public void dispose(){
+        this.tileMap.dispose();
+        this.renderer.dispose();
     }
 }
