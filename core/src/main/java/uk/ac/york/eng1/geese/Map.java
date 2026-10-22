@@ -11,10 +11,10 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Map {
 
-    private float mapBoundLeft;
-    private float mapBoundRight;
-    private float mapBoundRoof;
-    private float mapBoundFloor;
+    final private float mapBoundLeft;
+    final private float mapBoundRight;
+    final private float mapBoundRoof;
+    final private float mapBoundFloor;
 
     private TiledMap tileMap;
     private MapProperties mapProps;
@@ -28,7 +28,7 @@ public class Map {
 
         // Set world boundaries using loaded map.
         // Left and Floor are always 0.
-        this.mapBoundFloor = 0f;
+        this.mapBoundLeft = 0f;
         this.mapBoundRight = this.mapProps.get("width", Integer.class) * mapProps.get("tilewidth", Integer.class) * unitScale;
         this.mapBoundFloor = 0;
         this.mapBoundRoof = this.mapProps.get("height", Integer.class) * mapProps.get("tileheight", Integer.class) * unitScale;
