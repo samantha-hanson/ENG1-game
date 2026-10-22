@@ -37,6 +37,7 @@ public class Main extends ApplicationAdapter {
     private OrthogonalTiledMapRenderer mapRenderer;
     private MapProperties mapProps;
 
+    private GameMap gameMap;
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -57,6 +58,7 @@ public class Main extends ApplicationAdapter {
         float right = mapProps.get("width", Integer.class) * mapProps.get("tilewidth", Integer.class) * unitScale;
         float roof = mapProps.get("height", Integer.class) * mapProps.get("tileheight", Integer.class) * unitScale;
 
+        gameMap = new GameMap("mapdummy.tmx", unitScale);
         // Left and floor are always 0
         AbstractEntity.setWorldBounds(0, right, roof, 0);
         mapRenderer = new OrthogonalTiledMapRenderer(this.map, unitScale);
@@ -64,21 +66,24 @@ public class Main extends ApplicationAdapter {
         player = new Player(
             100,
             100,
-            10
+            10,
+            gameMap
         );
 
         goose1 = new Goose(
             300,
             300,
             2,
-            300
+            300,
+            gameMap
         );
 
         goose2 = new Goose(
             400,
             400,
             2,
-            300
+            300,
+            gameMap
         );
 
         // This should be defined by the goose spawning method
@@ -130,5 +135,7 @@ public class Main extends ApplicationAdapter {
         batch.dispose();
         map.dispose();
         mapRenderer.dispose();
+
+        gameMap.dispose();
     }
 }
