@@ -2,14 +2,13 @@ package uk.ac.york.eng1.geese;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.maps.MapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
-public class Map {
+public class GameMap {
 
     final private float mapBoundLeft;
     final private float mapBoundRight;
@@ -20,7 +19,7 @@ public class Map {
     private MapProperties mapProps;
     private OrthogonalTiledMapRenderer renderer;
 
-    public Map(String txm_path, float unitScale){
+    public GameMap(String txm_path, float unitScale){
         this.tileMap = new TmxMapLoader().load(txm_path);
         this.mapProps = this.tileMap.getProperties();
         this.renderer = new OrthogonalTiledMapRenderer(this.tileMap, unitScale);
