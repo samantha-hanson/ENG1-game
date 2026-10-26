@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import uk.ac.york.eng1.geese.GameMap;
 
 /**
  * represents the player character, storing necessary information such as the current position of the player.
@@ -22,12 +23,14 @@ public class Player extends AbstractEntity {
      * @param startX initial x-coordinate of the player.
      * @param startY initial y-coordinate of the player.
      * @param vel    velocity the player entity can move.
+     * @param gameMap represents the gameMap the Player entity can traverse and interact with
      */
-    public Player(float startX, float startY, float vel) {
+    public Player(float startX, float startY, float vel, GameMap gameMap) {
         this.pos = new Vector2(startX, startY);
         this.vel = vel;
         this.sprite = new Texture("playerdummy.png");
         this.hitbox = new Rectangle(this.pos.x - (this.sprite.getWidth() / 2f), this.pos.y - (this.sprite.getHeight() / 2f), this.sprite.getWidth(), this.sprite.getHeight());
+        this.gameMap = gameMap;
     }
 
     /**
@@ -41,21 +44,22 @@ public class Player extends AbstractEntity {
      */
     public void movePlayer() {
         if (Gdx.input.isKeyPressed(Keys.A)) {
-            this.pos.x = MathUtils.clamp(this.pos.x - this.vel, mapBoundLeft, mapBoundRight);
+            this.pos.x = this.pos.x - this.vel;
         }
 
         if (Gdx.input.isKeyPressed(Keys.D)) {
-            this.pos.x = MathUtils.clamp(this.pos.x + this.vel, mapBoundLeft, mapBoundRight);
+            this.pos.x = this.pos.x + this.vel;
         }
 
         if (Gdx.input.isKeyPressed(Keys.S)) {
-            this.pos.y = MathUtils.clamp(this.pos.y - this.vel, mapBoundFloor, mapBoundRoof);
+            this.pos.y = this.pos.y - this.vel;
         }
 
         if (Gdx.input.isKeyPressed(Keys.W)) {
-            this.pos.y = MathUtils.clamp(this.pos.y + this.vel, mapBoundFloor, mapBoundRoof);
+            this.pos.y = this.pos.y + this.vel;
         }
 
+        this.gameMap.clampPosition(this.pos);
         this.hitbox.setPosition(this.pos);
     }
 }

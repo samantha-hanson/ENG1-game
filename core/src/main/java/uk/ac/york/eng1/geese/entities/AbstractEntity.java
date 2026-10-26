@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import uk.ac.york.eng1.geese.GameMap;
 
 /**
  * Represents the standard for defining future entities.
@@ -35,29 +36,9 @@ public abstract class AbstractEntity {
     protected Rectangle hitbox;
 
     /**
-     * to prevent entities from wandering off map, set the world bounds and clamp movement.
-     * static since all entities will be bounded to the same loaded map.
+     * the map state that all entities can wander, interact with and traverse.
      */
-    protected static float mapBoundLeft;
-    protected static float mapBoundRight;
-    protected static float mapBoundRoof;
-    protected static float mapBoundFloor;
-
-    /**
-     * Set the world bounds used to constrain entity
-     *
-     * @param floor the lower-boundary of the world.
-     * @param roof  the upper-boundary of the world.
-     * @param right the right-boundary of the world.
-     * @param left  the left-boundary of the world.
-     *
-     */
-    public static void setWorldBounds(float left, float right, float roof, float floor) {
-        mapBoundLeft = left;
-        mapBoundRight = right;
-        mapBoundRoof = roof;
-        mapBoundFloor = floor;
-    }
+    protected GameMap gameMap;
 
     /**
      * Standardises SpriteBatch draw so that entity is drawn from center, not bottom-left corner.

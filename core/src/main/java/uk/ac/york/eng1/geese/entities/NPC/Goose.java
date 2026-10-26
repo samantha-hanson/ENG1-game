@@ -1,9 +1,11 @@
 package uk.ac.york.eng1.geese.entities.NPC;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import uk.ac.york.eng1.geese.GameMap;
 import uk.ac.york.eng1.geese.entities.AbstractEntity;
 
 /**
@@ -22,13 +24,15 @@ public class Goose extends AbstractNPC {
      * @param startY initial y-coordinate of the Goose.
      * @param vel    velocity the Goose entity can move.
      * @param vision represents the distance the Goose object can detect entities.
+     * @param gameMap represents the gameMap the Goose object can traverse and interact with
      *
      */
-    public Goose(float startX, float startY, float vel, float vision) {
+    public Goose(float startX, float startY, float vel, float vision, GameMap gameMap) {
         this.pos = new Vector2(startX, startY);
         this.vel = vel;
         this.sprite = new Texture("goosedummy.png");
         this.hitbox = new Rectangle(this.pos.x - (this.sprite.getWidth() / 2f), this.pos.y - (this.sprite.getHeight() / 2f), this.sprite.getWidth(), this.sprite.getHeight());
+        this.gameMap = gameMap;
 
         this.visualRadius = vision;
         this.targetPos = new Vector2(this.pos);
@@ -67,8 +71,7 @@ public class Goose extends AbstractNPC {
                     .add(this.pos);
 
                 // Clamp the target position to prevent void wandering
-                this.targetPos.x = MathUtils.clamp(this.targetPos.x, mapBoundLeft, mapBoundRight);
-                this.targetPos.y = MathUtils.clamp(this.targetPos.y, mapBoundFloor, mapBoundRoof);
+                this.gameMap.clampPosition(this.targetPos);
             }
         }
     }
