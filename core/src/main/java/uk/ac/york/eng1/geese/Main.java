@@ -3,38 +3,36 @@ package uk.ac.york.eng1.geese;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.utils.ScreenUtils;
 
-import uk.ac.york.eng1.geese.entities.AbstractEntity;
+import uk.ac.york.eng1.geese.entities.NPC.Fox;
 import uk.ac.york.eng1.geese.entities.NPC.Goose;
+import uk.ac.york.eng1.geese.entities.NPC.LongBoi;
 import uk.ac.york.eng1.geese.entities.Player;
-
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.MapProperties;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
  */
 public class Main extends ApplicationAdapter {
+    private static final float TOTAL_TIME = 300F;
     private SpriteBatch batch;
 
     private Player player;
     private Goose goose1;
     private Goose goose2;
     private Goose[] gooseArray;
+    private LongBoi longBoi;
+    private Fox fox;
 
     private OrthographicCamera camera;
     private Viewport viewport;
 
     private GameMap gameMap;
-    
+
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -74,6 +72,22 @@ public class Main extends ApplicationAdapter {
             gameMap
         );
 
+        longBoi = new LongBoi(
+            500,
+            500,
+            3,
+            500,
+            gameMap
+        );
+
+        fox = new Fox(
+            800,
+            800,
+            2,
+            500,
+            gameMap
+        );
+
         // This should be defined by the goose spawning method
         gooseArray = new Goose[]{goose1, goose2};
 
@@ -99,6 +113,15 @@ public class Main extends ApplicationAdapter {
             }
         }
 
+        if(player.getHitbox().overlaps(longBoi.getHitbox())){
+            System.out.println("long boi hit player");
+        }
+
+        if(longBoi.getHitbox().overlaps(fox.getHitbox())){
+            System.out.println("fox hit longBoi");
+        }
+
+
         //----------batch begins----------
         batch.begin();
         player.movePlayer();
@@ -108,6 +131,14 @@ public class Main extends ApplicationAdapter {
             goose.moveNPC();
             goose.draw(batch);
         }
+
+        longBoi.updateStatus(player);
+        longBoi.moveNPC();
+        longBoi.draw(batch);
+
+        fox.updateStatus(longBoi);
+        fox.moveNPC();
+        fox.draw(batch);
 
         player.draw(batch);
         batch.end();
