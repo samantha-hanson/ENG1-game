@@ -2,6 +2,7 @@ package uk.ac.york.eng1.geese;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -18,6 +19,8 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.MapProperties;
+import uk.ac.york.eng1.geese.items.Airhorn;
+import uk.ac.york.eng1.geese.items.Goosedisguise;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
@@ -34,7 +37,7 @@ public class Main extends ApplicationAdapter {
     private Viewport viewport;
 
     private GameMap gameMap;
-    
+
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -57,6 +60,9 @@ public class Main extends ApplicationAdapter {
             10,
             gameMap
         );
+
+        player.getInventory().addItem(new Airhorn());
+        player.getInventory().addItem(new Goosedisguise());
 
         goose1 = new Goose(
             300,
@@ -99,6 +105,17 @@ public class Main extends ApplicationAdapter {
             }
         }
 
+        // Use items
+        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+            player.getInventory().useItem(Airhorn.class, player);
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) {
+            player.getInventory().useItem(Goosedisguise.class, player);
+        }
+
+// Tick timed item effects once per frame
+        player.getInventory().update(Gdx.graphics.getDeltaTime());
+
         //----------batch begins----------
         batch.begin();
         player.movePlayer();
@@ -120,5 +137,6 @@ public class Main extends ApplicationAdapter {
     public void dispose() {
         batch.dispose();
         gameMap.dispose();
+        player.getInventory().dispose();
     }
 }
