@@ -1,4 +1,5 @@
 package uk.ac.york.eng1.geese.entities;
+import uk.ac.york.eng1.geese.items.Inventory;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -62,4 +63,11 @@ public class Player extends AbstractEntity {
         this.gameMap.clampPosition(this.pos);
         this.hitbox.setPosition(this.pos);
     }
+
+    private final Inventory inventory = new Inventory();
+
+    public Inventory getInventory() {
+        return this.inventory;
+    }
+
 }
