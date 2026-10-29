@@ -1,6 +1,6 @@
 package uk.ac.york.eng1.geese.items;
 
-public enum Status {
+public enum Item_Status {
     ACTIVE,
     INACTIVE
 }
