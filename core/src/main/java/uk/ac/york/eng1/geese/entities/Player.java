@@ -70,6 +70,7 @@ public class Player extends AbstractEntity {
     }
 
 
+    //Is disguised behavior
     /**
      * Whether the player is currently wearing the goose disguise. Geese ignore a disguised player.
      */
@@ -91,6 +92,25 @@ public class Player extends AbstractEntity {
      */
     public boolean getDisguised() {
         return this.isDisguised;
+    }
+
+    //Changing sprite behavior
+    /**
+     * Fetch the texture currently used to draw the player.
+     *
+     * @return The player's current sprite.
+     */
+    public Texture getSprite(){
+        return this.sprite;
+    }
+
+    /**
+     * Changes the texture used to draw the player.
+     *
+     * @param sprite The texture to draw the player with.
+     */
+    public void setSprite(Texture sprite) {
+        this.sprite = sprite;
     }
 
 }
