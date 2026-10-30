@@ -62,7 +62,7 @@ public class Main extends ApplicationAdapter {
         );
 
         player.getInventory().addItem(new Airhorn(new Texture("Airhorn.png")));
-        player.getInventory().addItem(new Goosedisguise());
+        player.getInventory().addItem(new Goosedisguise(new Texture("Goosedisguise.png")));
 
         goose1 = new Goose(
             300,
