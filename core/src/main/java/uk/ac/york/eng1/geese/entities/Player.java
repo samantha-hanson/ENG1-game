@@ -4,7 +4,6 @@ import uk.ac.york.eng1.geese.items.Inventory;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import uk.ac.york.eng1.geese.GameMap;
@@ -63,11 +62,35 @@ public class Player extends AbstractEntity {
         this.gameMap.clampPosition(this.pos);
         this.hitbox.setPosition(this.pos);
     }
-
+    //Inventory
     private final Inventory inventory = new Inventory();
 
     public Inventory getInventory() {
         return this.inventory;
+    }
+
+
+    /**
+     * Whether the player is currently wearing the goose disguise. Geese ignore a disguised player.
+     */
+    private boolean isDisguised = false;
+
+    /**
+     * Turns the player's disguise on or off.
+     *
+     * @param disguised true to put the disguise on, false to take it off
+     */
+    public void setDisguised(boolean disguised) {
+        this.isDisguised = disguised;
+    }
+
+    /**
+     * Checks whether the player is currently disguised.
+     *
+     * @return true if the player is disguised
+     */
+    public boolean getDisguised() {
+        return this.isDisguised;
     }
 
 }
