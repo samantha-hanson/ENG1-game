@@ -21,6 +21,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.MapProperties;
 import uk.ac.york.eng1.geese.items.Airhorn;
 import uk.ac.york.eng1.geese.items.Goosedisguise;
+import com.badlogic.gdx.graphics.Texture;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
@@ -31,7 +32,6 @@ public class Main extends ApplicationAdapter {
     private Player player;
     private Goose goose1;
     private Goose goose2;
-    private Goose[] gooseArray;
 
     private OrthographicCamera camera;
     private Viewport viewport;
@@ -61,7 +61,7 @@ public class Main extends ApplicationAdapter {
             gameMap
         );
 
-        player.getInventory().addItem(new Airhorn());
+        player.getInventory().addItem(new Airhorn(new Texture("Airhorn.png")));
         player.getInventory().addItem(new Goosedisguise());
 
         goose1 = new Goose(
@@ -81,7 +81,8 @@ public class Main extends ApplicationAdapter {
         );
 
         // This should be defined by the goose spawning method
-        gooseArray = new Goose[]{goose1, goose2};
+        gameMap.addGoose(goose1);
+        gameMap.addGoose(goose2);
 
         // Ensure the viewport is correctly sized to the window
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
@@ -99,28 +100,30 @@ public class Main extends ApplicationAdapter {
         batch.setProjectionMatrix(camera.combined);
 
         // Check for collision between entities -> this is very inefficient.
-        for (Goose goose : gooseArray){
+        for (Goose goose : gameMap.getGeese()){
             if(player.getHitbox().overlaps(goose.getHitbox())){
                 System.out.println("goose hit player");
             }
         }
 
         // Use items
-        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
-            player.getInventory().useItem(Airhorn.class, player);
+        // gameMap is now passed because Inventory.useItem needs it for the item's effect
+        if (Gdx.input.isKeyJustPressed(Input .Keys.E)) {
+            player.getInventory().useItem(Airhorn.class, gameMap, player);
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) {
-            player.getInventory().useItem(Goosedisguise.class, player);
+            player.getInventory().useItem(Goosedisguise.class, gameMap, player);
         }
 
-// Tick timed item effects once per frame
-        player.getInventory().update(Gdx.graphics.getDeltaTime());
+        // Tick timed item effects once per frame
+        // Fixed: gameMap and player are now passed because items need them to end their effects
+        player.getInventory().update(Gdx.graphics.getDeltaTime(), gameMap, player);
 
         //----------batch begins----------
         batch.begin();
         player.movePlayer();
 
-        for (Goose goose : gooseArray) {
+        for (Goose goose : gameMap.getGeese()) {
             goose.updateStatus(player);
             goose.moveNPC();
             goose.draw(batch);
