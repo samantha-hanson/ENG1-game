@@ -161,6 +161,17 @@ public abstract class AbstractItems {
         return this.sprite;
     }
 
+    /**
+     * Frees the memory used by the item's texture. Called by Inventory.dispose().
+     * Fixed: Inventory.dispose() was calling this method but it did not exist. Textures are not freed
+     * automatically, so without it they would stay in graphics memory.
+     */
+    public void dispose(){
+        if(this.sprite != null) {
+            this.sprite.dispose();
+        }
+    }
+
 
 
 }
