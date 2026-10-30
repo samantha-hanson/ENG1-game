@@ -6,7 +6,7 @@ import uk.ac.york.eng1.geese.entities.Player;
 
 public class Goosedisguise extends AbstractItems {
 
-    private Texture originalsprite;
+    private Texture originalSprite;
 
     public Goosedisguise(Texture sprite) {
         super("Disguise",
@@ -19,14 +19,16 @@ public class Goosedisguise extends AbstractItems {
     @Override
     protected void applyEffect(GameMap gameMap, Player player) {
         player.setDisguised(true);
-        originalsprite = player.getSprite();    //Storing original sprite
-        player.setSprite(new Texture("GooseDisguise.png")); //Changing current sprite
+        //Changing the player appearance
+        originalSprite = player.getSprite();    //Storing original sprite
+        player.setSprite(this.sprite); //Changing current sprite
 
     }
 
     @Override
     protected void endEffect(GameMap gameMap, Player player) {
         player.setDisguised(false);
-        player.setSprite(originalsprite);
+        //Changing the sprite design back to the original one
+        player.setSprite(originalSprite);
     }
 }
