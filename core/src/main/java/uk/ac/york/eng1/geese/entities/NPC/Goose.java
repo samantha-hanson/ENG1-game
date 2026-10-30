@@ -46,7 +46,8 @@ public class Goose extends AbstractNPC {
      */
     @Override
     public void updateStatus(AbstractEntity entity) {
-        Vector2 entPos = entity.getPos();
+        Vector2 entPos
+            = entity.getPos();
 
         // A scared goose runs directly away from the entity instead of targeting it
         if (this.status == Status.SCARED) {
