@@ -3,6 +3,7 @@ package uk.ac.york.eng1.geese;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -61,7 +62,8 @@ public class Main extends ApplicationAdapter {
             gameMap
         );
 
-        player.getInventory().addItem(new Airhorn(new Texture("Airhorn.png")));
+        player.getInventory().addItem(new Airhorn(new Texture("Airhorn.png"),
+            Gdx.audio.newSound(Gdx.files.internal("AirhornSound.wav"))));
         player.getInventory().addItem(new Goosedisguise(new Texture("Goosedisguise.png")));
 
         goose1 = new Goose(
