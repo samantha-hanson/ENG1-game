@@ -6,19 +6,12 @@ import java.util.Optional;
 import uk.ac.york.eng1.geese.GameMap;
 import uk.ac.york.eng1.geese.entities.Player;
 
-/**
- * Holds the items the player is carrying.
- *
- * <p>
- * Owned by Player via composition. Sits outside the AbstractEntity hierarchy — it has no
- * position, sprite or hitbox of its own. No capacity limit is applied: with only two items
- * in the game, a cap would be dead logic.
- * </p>
- */
+/** Holds the player's items. Owned by Player; not an AbstractEntity (no position/sprite/hitbox). */
 public class Inventory {
 
     private final List<AbstractItems> items = new ArrayList<>();
 
+    /** Adds an item; rejects null. Returns true if added. */
     public boolean addItem(AbstractItems item) {
         if (item == null) {
             return false;
@@ -27,10 +20,12 @@ public class Inventory {
         return true;
     }
 
+    /** Removes this exact item instance. Returns true if it was present. */
     public boolean removeItem(AbstractItems item) {
         return this.items.remove(item);
     }
 
+    /** Returns true if any held item is an instance of {@code type}. */
     public <T extends AbstractItems> boolean hasItem(Class<T> type) {
         for (AbstractItems item : this.items) {
             if (type.isInstance(item)) {
@@ -40,6 +35,7 @@ public class Inventory {
         return false;
     }
 
+    /** Returns the first held item of {@code type}, or empty if none. */
     public <T extends AbstractItems> Optional<T> getItem(Class<T> type) {
         for (AbstractItems item : this.items) {
             if (type.isInstance(item)) {
@@ -49,57 +45,47 @@ public class Inventory {
         return Optional.empty();
     }
 
-    /**
-     * Uses the first held item of the given type.
-     *
-     * <p>
-     * Fixed: this used to call item.use(player), but AbstractItems.use needs the GameMap as well.
-     * gameMap was added as a parameter because Inventory does not store it, and items need it to
-     * reach the geese.
-     * </p>
-     *
-     * @param type The class of the item to use, such as Airhorn.class.
-     * @param gameMap Passed to the item so its effect can reach the geese.
-     * @param player The player using the item.
-     * @return true if an item of that type was found, even if it could not be used.
-     */
+    /** Count of successful item activations, for future scoring. */
+    private int itemsUsed = 0;
+
+    /** Uses the first held item of {@code type}; returns true if one was found (not necessarily used). */
     public <T extends AbstractItems> boolean useItem(Class<T> type, GameMap gameMap, Player player) {
         Optional<T> found = getItem(type);
-        found.ifPresent(item -> item.use(gameMap, player));
+        if (found.isPresent() && found.get().use(gameMap, player)) {
+            this.itemsUsed++;
+        }
         return found.isPresent();
     }
 
-    /**
-     * Ticks all held items so timed effects can expire. Call once per frame from Main.
-     *
-     * <p>
-     * Fixed: this used to call item.update(delta), but AbstractItems.update also needs the GameMap
-     * and Player. An item passes them to endEffect when its time runs out, so that it can undo its effect.
-     * </p>
-     *
-     * @param delta Time in seconds since the last frame.
-     * @param gameMap Passed to each item so endEffect can reach the geese.
-     * @param player Passed to each item so endEffect can undo changes made to the player.
-     */
+    /** Returns how many item activations have succeeded. */
+    public int getItemsUsed() {
+        return this.itemsUsed;
+    }
+
+    /** Ticks every held item's timed effect; call once per frame. */
     public void update(float delta, GameMap gameMap, Player player) {
         for (AbstractItems item : this.items) {
             item.update(delta, gameMap, player);
         }
     }
 
+    /** Returns a read-only copy of the item list (item instances are the live ones). */
     public List<AbstractItems> getItems() {
+
         return List.copyOf(this.items);
     }
 
+    /** Empties the inventory without disposing textures; use dispose() at shutdown. */
     public void clear() {
         this.items.clear();
     }
 
+    /** Returns the number of items currently held. */
     public int size() {
         return this.items.size();
     }
 
-    /** Free all item textures. Call from Main.dispose(). */
+    /** Disposes every item's texture and empties the inventory; call once at shutdown. */
     public void dispose() {
         for (AbstractItems item : this.items) {
             item.dispose();

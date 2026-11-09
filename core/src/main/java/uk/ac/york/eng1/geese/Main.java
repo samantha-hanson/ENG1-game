@@ -24,6 +24,8 @@ import uk.ac.york.eng1.geese.items.Airhorn;
 import uk.ac.york.eng1.geese.items.Goosedisguise;
 import com.badlogic.gdx.graphics.Texture;
 
+import uk.ac.york.eng1.geese.ui.Hud;
+
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
  */
@@ -38,6 +40,10 @@ public class Main extends ApplicationAdapter {
     private Viewport viewport;
 
     private GameMap gameMap;
+
+    private Hud hud;
+    /** Food a goose takes per bite. */
+    private static final int BITE_AMOUNT = 10;
 
     @Override
     public void resize(int width, int height) {
@@ -61,6 +67,8 @@ public class Main extends ApplicationAdapter {
             10,
             gameMap
         );
+
+        hud = new Hud();
 
         player.getInventory().addItem(new Airhorn(new Texture("Airhorn.png"),
             Gdx.audio.newSound(Gdx.files.internal("AirhornSound.wav"))));
@@ -101,10 +109,13 @@ public class Main extends ApplicationAdapter {
         gameMap.setViewAndRender(camera);
         batch.setProjectionMatrix(camera.combined);
 
-        // Check for collision between entities -> this is very inefficient.
-        for (Goose goose : gameMap.getGeese()){
-            if(player.getHitbox().overlaps(goose.getHitbox())){
-                System.out.println("goose hit player");
+        // food timer
+        player.updateFoodTimer(Gdx.graphics.getDeltaTime());
+
+        for (Goose goose : gameMap.getGeese()) {
+            // Geese can't bite a disguised player, matching how they ignore them when targeting
+            if (!player.getDisguised() && player.getHitbox().overlaps(goose.getHitbox())) {
+                player.loseFood(BITE_AMOUNT);
             }
         }
 
@@ -133,6 +144,7 @@ public class Main extends ApplicationAdapter {
 
         player.draw(batch);
         batch.end();
+        hud.draw(batch, viewport, player);
         //----------batch ends----------
 
     }
@@ -143,5 +155,6 @@ public class Main extends ApplicationAdapter {
         batch.dispose();
         gameMap.dispose();
         player.getInventory().dispose();
+        hud.dispose();
     }
 }

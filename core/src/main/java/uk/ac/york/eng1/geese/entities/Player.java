@@ -113,4 +113,50 @@ public class Player extends AbstractEntity {
         this.sprite = sprite;
     }
 
+    // Food (health)
+    /** Maximum amount of Yorkshire pudding the player can hold. */
+    private static final int MAX_FOOD = 100;
+
+    /** Seconds the player is safe from further bites after a goose takes some food. */
+    private static final float BITE_COOLDOWN = 1f;
+
+    private int food = MAX_FOOD;
+    private float biteCooldownLeft = 0f;
+
+    /**
+     * Counts down the bite cooldown. Call once per frame.
+     *
+     * @param delta Time in seconds since the last frame.
+     */
+    public void updateFoodTimer(float delta) {
+        if (this.biteCooldownLeft > 0) {
+            this.biteCooldownLeft -= delta;
+        }
+    }
+
+    /**
+     * A goose takes some of the player's food. Ignored during the bite cooldown.
+     *
+     * @param amount How much food is taken.
+     * @return true if food was actually lost.
+     */
+    public boolean loseFood(int amount) {
+        if (this.biteCooldownLeft > 0 || this.food <= 0) {
+            return false;
+        }
+        this.food = Math.max(0, this.food - amount);
+        this.biteCooldownLeft = BITE_COOLDOWN;
+        return true;
+    }
+
+    /** @return food remaining as a fraction between 0 and 1, for drawing the bar. */
+    public float getFoodFraction() {
+        return (float) this.food / MAX_FOOD;
+    }
+
+    /** @return true if all the food has been eaten (the game-over condition). */
+    public boolean isOutOfFood() {
+        return this.food <= 0;
+    }
+
 }

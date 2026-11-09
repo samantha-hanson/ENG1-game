@@ -172,6 +172,10 @@ public abstract class AbstractItems {
         }
     }
 
+    /** getter to show how many uses left in item */
+    public int getUsesRemaining() {
+        return this.usesRemaining;
+    }
 
 
 }
