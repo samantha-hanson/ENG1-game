@@ -6,6 +6,15 @@ import uk.ac.york.eng1.geese.entities.NPC.Goose;
 import uk.ac.york.eng1.geese.entities.Player;
 import com.badlogic.gdx.audio.Sound;
 
+/**
+ * Represents the airhorn item, storing information such as the Scare radius for the item and its
+ * interactions with the geese
+ *
+ * <p>
+ *     Extends abstract items by adding a way for the item to interact with the world and the geese
+ * </p>
+ */
+
 public class Airhorn extends AbstractItems {
 
     /**
@@ -13,12 +22,16 @@ public class Airhorn extends AbstractItems {
      */
     private static final float SCARE_RADIUS = 300f;
 
+    /**
+     * Sound to be played when the airhorn is used
+     */
     private final Sound sound;
 
     /**
-     * Constructor to get each item to set up their corresponding values
-     *
+     * <p>
+     * Creating an Airhorn object
      * Airhorn takes in a sprite parameter to easily allow changing the png later on
+     * </p>
      * @param sprite - How the item looks like
      * @param sound - Sound played when the airhorn goes off
      */
@@ -32,7 +45,9 @@ public class Airhorn extends AbstractItems {
     }
 
     /**
-     * Scares every goose within SCARE_RADIUS of the player.
+     * Scares every goose within SCARE_RADIUS of the player and plays an airhorn sound
+     * @param gameMap Passed to the item so its effect can reach the geese.
+     * @param player The player using the item.
      */
     @Override
     protected void applyEffect(GameMap gameMap, Player player) {
@@ -46,6 +61,8 @@ public class Airhorn extends AbstractItems {
 
     /**
      * Calms every scared goose once the Airhorn's effect runs out.
+     * @param gameMap Passed to the item so its effect can reach the geese.
+     * @param player The player using the item.
      */
     @Override
     protected void endEffect(GameMap gameMap, Player player) {

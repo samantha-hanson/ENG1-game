@@ -42,7 +42,8 @@ public class Goose extends AbstractNPC {
     /**
      * {@inheritDoc}
      * implementation note: A scared goose runs directly away from the passed entity. Otherwise, the goose targets the
-     * passed entity if it is within the vision of the goose, and updates its wandering behaviour if not.
+     * passed entity if it is within the vision of the goose, and updates its wandering behaviour if not. This only occurs
+     * if the passed entity is a player.
      * Additionally, disguised players are ignored by the geese and not targeted
      *
      */

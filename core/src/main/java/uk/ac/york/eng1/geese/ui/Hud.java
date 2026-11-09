@@ -93,7 +93,9 @@ public class Hud {
         }
     }
 
-    /** Frees the textures and font. Call from Main.dispose(). */
+    /**
+     * Frees the textures and font. Call from Main.dispose().
+     */
     public void dispose() {
         this.pixel.dispose();
         this.puddingIcon.dispose();
