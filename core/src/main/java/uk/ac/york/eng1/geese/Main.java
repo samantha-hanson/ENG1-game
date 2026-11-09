@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -32,6 +34,10 @@ public class Main extends ApplicationAdapter {
     private Viewport viewport;
 
     private GameMap gameMap;
+
+    private BitmapFont timerFont;
+    private GlyphLayout timerLayout;
+    private float timer;
 
     @Override
     public void resize(int width, int height) {
@@ -93,6 +99,12 @@ public class Main extends ApplicationAdapter {
 
         // Ensure the viewport is correctly sized to the window
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+
+        // Start the 5-minute countdown timer from the moment the game begins.
+        timer = TOTAL_TIME;
+        timerFont = new BitmapFont();
+        timerFont.getData().setScale(2f);
+        timerLayout = new GlyphLayout();
     }
 
     // Per frame behaviour
@@ -144,12 +156,35 @@ public class Main extends ApplicationAdapter {
         batch.end();
         //----------batch ends----------
 
+        //----------HUD: 5-minute countdown timer in the top-right corner----------
+        timer -= Gdx.graphics.getDeltaTime();
+        if (timer < 0f) {
+            timer = 0f;
+        }
+
+        int minutes = (int) (timer / 60);
+        int seconds = (int) (timer % 60);
+        String timeText = String.format("%02d:%02d", minutes, seconds);
+        timerLayout.setText(timerFont, timeText);
+
+        // Switch to screen coordinates so the timer stays fixed in the corner
+        // of the window regardless of where the camera is.
+        batch.getProjectionMatrix().setToOrtho2D(0, 0,
+            Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.begin();
+        float padding = 20f;
+        timerFont.draw(batch, timeText,
+            Gdx.graphics.getWidth() - timerLayout.width - padding,
+            Gdx.graphics.getHeight() - padding);
+        batch.end();
+        //----------HUD ends----------
     }
 
     // Runs once at the end of the program
     @Override
     public void dispose() {
         batch.dispose();
+        timerFont.dispose();
         gameMap.dispose();
     }
 }
