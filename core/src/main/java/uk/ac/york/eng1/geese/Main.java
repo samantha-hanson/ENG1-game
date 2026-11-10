@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import uk.ac.york.eng1.geese.entities.AbstractEntity;
 import uk.ac.york.eng1.geese.entities.NPC.Goose;
+import uk.ac.york.eng1.geese.entities.NPC.Status;
 import uk.ac.york.eng1.geese.entities.Player;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -113,8 +114,8 @@ public class Main extends ApplicationAdapter {
         player.updateFoodTimer(Gdx.graphics.getDeltaTime());
 
         for (Goose goose : gameMap.getGeese()) {
-            // Geese can't bite a disguised player, matching how they ignore them when targeting
-            if (!player.getDisguised() && player.getHitbox().overlaps(goose.getHitbox())) {
+            // Geese can't bite a disguised player and when Scared, matching how they ignore them when targeting
+            if (!player.getDisguised() && goose.getStatus() != Status.SCARED && player.getHitbox().overlaps(goose.getHitbox())) {
                 player.loseFood(BITE_AMOUNT);
             }
         }

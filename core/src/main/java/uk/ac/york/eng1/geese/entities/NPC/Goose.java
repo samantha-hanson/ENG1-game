@@ -105,4 +105,12 @@ public class Goose extends AbstractNPC {
             this.status = Status.IDLE;
         }
     }
+
+    /**
+     * Displaying the status of the goose object
+     * @return Current Status of the goose
+     */
+    public Status getStatus(){
+        return this.status;
+    }
 }
