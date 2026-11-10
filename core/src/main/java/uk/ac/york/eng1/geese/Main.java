@@ -3,6 +3,7 @@ package uk.ac.york.eng1.geese;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -104,10 +105,12 @@ public class Main extends ApplicationAdapter {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
         // ---spawn logic begins---
-        if (!long_boi_spawned && timer <= 180f){
+        if (!long_boi_spawned && timer <= 290f){
+            // spawns longboi related to the players position
+            Vector2 spawnPos = player.getPos().cpy().add(300,300);
             longBoi = new LongBoi(
-                500,
-                500,
+                spawnPos.x,
+                spawnPos.y,
                 3,
                 500,
                 gameMap
@@ -116,10 +119,12 @@ public class Main extends ApplicationAdapter {
             System.out.println("Long Boi has spawned!");
         }
 
-        if  (!fox_spawned && timer <= 165f) {
+        if  (!fox_spawned && timer <= 280f) {
+            // spawns fox related to the players position
+            Vector2 spawnPos = player.getPos().cpy().add(300, 300);
             fox = new Fox(
-                800,
-                800,
+                spawnPos.x,
+                spawnPos.y,
                 2,
                 500,
                 gameMap
