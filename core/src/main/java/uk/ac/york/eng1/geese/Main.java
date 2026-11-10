@@ -28,7 +28,11 @@ public class Main extends ApplicationAdapter {
     private Goose goose2;
     private Goose[] gooseArray;
     private LongBoi longBoi;
+    // initially set to false, set to true when 2 minutes have passed
+    private boolean long_boi_spawned = false;
     private Fox fox;
+    // initially set to false, set to true when the timer reaches 2 minutes 45 seconds have passed
+    private boolean fox_spawned = false;
 
     private OrthographicCamera camera;
     private Viewport viewport;
@@ -38,6 +42,7 @@ public class Main extends ApplicationAdapter {
     private BitmapFont timerFont;
     private GlyphLayout timerLayout;
     private float timer;
+
 
     @Override
     public void resize(int width, int height) {
@@ -78,21 +83,7 @@ public class Main extends ApplicationAdapter {
             gameMap
         );
 
-        longBoi = new LongBoi(
-            500,
-            500,
-            3,
-            500,
-            gameMap
-        );
 
-        fox = new Fox(
-            800,
-            800,
-            2,
-            500,
-            gameMap
-        );
 
         // This should be defined by the goose spawning method
         gooseArray = new Goose[]{goose1, goose2};
@@ -112,6 +103,32 @@ public class Main extends ApplicationAdapter {
     public void render() {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
+        // ---spawn logic begins---
+        if (!long_boi_spawned && timer <= 180f){
+            longBoi = new LongBoi(
+                500,
+                500,
+                3,
+                500,
+                gameMap
+            );
+            long_boi_spawned = true;
+            System.out.println("Long Boi has spawned!");
+        }
+
+        if  (!fox_spawned && timer <= 165f) {
+            fox = new Fox(
+                800,
+                800,
+                2,
+                500,
+                gameMap
+            );
+            fox_spawned = true;
+            System.out.println("fox has spawned!");
+        }
+        // ---spawn logic ends---
+
         // Load map and set up camera
         camera.position.set(player.getPos(), 0);
         camera.update();
@@ -124,13 +141,14 @@ public class Main extends ApplicationAdapter {
                 System.out.println("goose hit player");
             }
         }
+        if (longBoi != null) {
+            if (player.getHitbox().overlaps(longBoi.getHitbox())) {
+                System.out.println("long boi hit player");
+            }
 
-        if(player.getHitbox().overlaps(longBoi.getHitbox())){
-            System.out.println("long boi hit player");
-        }
-
-        if(longBoi.getHitbox().overlaps(fox.getHitbox())){
-            System.out.println("fox hit longBoi");
+            if (fox != null && longBoi.getHitbox().overlaps(fox.getHitbox())) {
+                System.out.println("fox hit longBoi");
+            }
         }
 
 
@@ -144,13 +162,17 @@ public class Main extends ApplicationAdapter {
             goose.draw(batch);
         }
 
-        longBoi.updateStatus(player);
-        longBoi.moveNPC();
-        longBoi.draw(batch);
+        if (longBoi != null) {
+            longBoi.updateStatus(player);
+            longBoi.moveNPC();
+            longBoi.draw(batch);
+        }
 
-        fox.updateStatus(longBoi);
-        fox.moveNPC();
-        fox.draw(batch);
+        if (fox != null) {
+            fox.updateStatus(longBoi != null ? longBoi : player);
+            fox.moveNPC();
+            fox.draw(batch);
+        }
 
         player.draw(batch);
         batch.end();
@@ -171,11 +193,14 @@ public class Main extends ApplicationAdapter {
         // of the window regardless of where the camera is.
         batch.getProjectionMatrix().setToOrtho2D(0, 0,
             Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
         batch.begin();
+
         float padding = 20f;
         timerFont.draw(batch, timeText,
             Gdx.graphics.getWidth() - timerLayout.width - padding,
             Gdx.graphics.getHeight() - padding);
+
         batch.end();
         //----------HUD ends----------
     }
