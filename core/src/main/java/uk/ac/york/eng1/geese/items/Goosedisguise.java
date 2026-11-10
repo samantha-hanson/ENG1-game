@@ -20,6 +20,9 @@ public class Goosedisguise extends AbstractItems {
      */
     private Texture originalSprite;
 
+    /**
+     * Original velocity of the player will be stored in this field
+     */
     private float originalVel;
 
     /**
