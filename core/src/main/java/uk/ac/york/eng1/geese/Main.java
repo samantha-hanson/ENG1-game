@@ -105,7 +105,7 @@ public class Main extends ApplicationAdapter {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
         // ---spawn logic begins---
-        if (!long_boi_spawned && timer <= 290f){
+        if (!long_boi_spawned && timer <= 180f){
             // spawns longboi related to the players position
             Vector2 spawnPos = player.getPos().cpy().add(300,300);
             longBoi = new LongBoi(
@@ -119,7 +119,7 @@ public class Main extends ApplicationAdapter {
             System.out.println("Long Boi has spawned!");
         }
 
-        if  (!fox_spawned && timer <= 280f) {
+        if  (!fox_spawned && timer <= 135f) {
             // spawns fox related to the players position
             Vector2 spawnPos = player.getPos().cpy().add(300, 300);
             fox = new Fox(
