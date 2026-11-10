@@ -121,6 +121,22 @@ public class Player extends AbstractEntity {
         this.sprite = sprite;
     }
 
+    /**
+     * Getter to displayer current player velocity
+     * @return Current velocity
+     */
+    public float getVel(){
+        return this.vel;
+    }
+
+    /**
+     * Setter to change player velocity when the player is disguised
+     * @param vel Velocity to set
+     */
+    public void setVel(float vel) {
+        this.vel = vel;
+    }
+
     // Food (health)
     /** Maximum amount of Yorkshire pudding the player can hold. */
     private static final int MAX_FOOD = 100;

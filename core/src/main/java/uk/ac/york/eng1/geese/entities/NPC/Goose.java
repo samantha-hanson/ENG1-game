@@ -60,7 +60,7 @@ public class Goose extends AbstractNPC {
 
         float distance = this.pos.dst(entPos);
 
-        // Check if the entity is within sight and approach & if they are disguised
+        // Check if the entity is within sight and approach & if they are not disguised
         if(entity instanceof Player player) {
             //If the player isn't disguised and within the visualRadius -> start Targeting
             if (distance <= this.visualRadius && !player.getDisguised()) {

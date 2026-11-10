@@ -20,6 +20,8 @@ public class Goosedisguise extends AbstractItems {
      */
     private Texture originalSprite;
 
+    private float originalVel;
+
     /**
      * Constructor to set up the initial values of the goose disguise
      * @param sprite How the disguise looks like
@@ -43,7 +45,8 @@ public class Goosedisguise extends AbstractItems {
         //Changing the player appearance
         originalSprite = player.getSprite();    //Storing original sprite
         player.setSprite(this.sprite); //Changing current sprite
-
+        originalVel = player.getVel();  //Storing original Velocity
+        player.setVel(5);   //Changing current velocity
     }
 
     @Override
@@ -51,5 +54,7 @@ public class Goosedisguise extends AbstractItems {
         player.setDisguised(false);
         //Changing the sprite design back to the original one
         player.setSprite(originalSprite);
+        //Changing Velocity back to the original value
+        player.setVel(originalVel);
     }
 }
