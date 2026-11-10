@@ -40,8 +40,8 @@ public class Fox extends AbstractNPC{
 
     /**
      * {@inheritDoc}
-     * implementation note: fox behaviour currently targets long boi if it is within the vision of the long boi.
-     * Otherwise, it updates the wandering behaviour of long boi.
+     * implementation note: fox behaviour targets the closest goose, player or long boi.
+     * Otherwise, it enters its idle state.
      *
      */
 
@@ -75,5 +75,25 @@ public class Fox extends AbstractNPC{
                 this.gameMap.clampPosition(this.targetPos);
             }
         }
+    }
+
+    /**
+     * Calculates which entity is closest to the fox within its vision.
+     *
+     * @param geese List of all goose entities.
+     * @param mainTarget either long boi entity if it is currently spawned, otherwise the player entity.
+     * @return closest entity in the fox's vision.
+     */
+    public AbstractEntity findClosestTarget(Goose[] geese, AbstractEntity mainTarget){
+        Goose closestGoose = null;
+        float minDist = Float.MAX_VALUE;
+        for(Goose goose: geese){
+            float dist = this.getPos().dst2(goose.getPos());
+            if (dist < minDist){
+                minDist = dist;
+                closestGoose = goose;
+            }
+        }
+        return closestGoose != null ? closestGoose: mainTarget;
     }
 }

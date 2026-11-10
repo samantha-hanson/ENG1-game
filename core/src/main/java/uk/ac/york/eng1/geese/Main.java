@@ -174,7 +174,7 @@ public class Main extends ApplicationAdapter {
         }
 
         if (fox != null) {
-            fox.updateStatus(longBoi != null ? longBoi : player);
+            fox.updateStatus(fox.findClosestTarget(gooseArray, longBoi != null ? longBoi : player));
             fox.moveNPC();
             fox.draw(batch);
         }
