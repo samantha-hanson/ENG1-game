@@ -3,31 +3,22 @@ package uk.ac.york.eng1.geese;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
-
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import uk.ac.york.eng1.geese.entities.NPC.Fox;
 import uk.ac.york.eng1.geese.entities.NPC.Goose;
-import uk.ac.york.eng1.geese.entities.NPC.Status;
 import uk.ac.york.eng1.geese.entities.NPC.LongBoi;
+import uk.ac.york.eng1.geese.entities.NPC.Status;
 import uk.ac.york.eng1.geese.entities.Player;
-
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.MapProperties;
 import uk.ac.york.eng1.geese.items.Airhorn;
 import uk.ac.york.eng1.geese.items.Goosedisguise;
-import com.badlogic.gdx.graphics.Texture;
-
 import uk.ac.york.eng1.geese.ui.Hud;
 
 /**
@@ -40,7 +31,6 @@ public class Main extends ApplicationAdapter {
     private Player player;
     private Goose goose1;
     private Goose goose2;
-    private Goose[] gooseArray;
     private LongBoi longBoi;
     // initially set to false, set to true when 2 minutes have passed
     private boolean long_boi_spawned = false;
@@ -215,7 +205,7 @@ public class Main extends ApplicationAdapter {
         }
 
         if (fox != null) {
-            fox.updateStatus(fox.findClosestTarget(gooseArray, longBoi != null ? longBoi : player));
+            fox.updateStatus(fox.findClosestTarget(gameMap.getGeese(), longBoi != null ? longBoi : player));
             fox.moveNPC();
             fox.draw(batch);
         }

@@ -6,6 +6,8 @@ import com.badlogic.gdx.math.Vector2;
 import uk.ac.york.eng1.geese.GameMap;
 import uk.ac.york.eng1.geese.entities.AbstractEntity;
 
+import java.util.List;
+
 /**
  * represents the fox NPC.
  *
@@ -84,7 +86,7 @@ public class Fox extends AbstractNPC{
      * @param mainTarget either long boi entity if it is currently spawned, otherwise the player entity.
      * @return closest entity in the fox's vision.
      */
-    public AbstractEntity findClosestTarget(Goose[] geese, AbstractEntity mainTarget){
+    public AbstractEntity findClosestTarget(List<Goose> geese, AbstractEntity mainTarget){
         Goose closestGoose = null;
         float minDist = Float.MAX_VALUE;
         for(Goose goose: geese){
