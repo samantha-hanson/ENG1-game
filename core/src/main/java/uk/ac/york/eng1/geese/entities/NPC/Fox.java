@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import uk.ac.york.eng1.geese.GameMap;
 import uk.ac.york.eng1.geese.entities.AbstractEntity;
+import uk.ac.york.eng1.geese.entities.Player;
 
 import java.util.List;
 
@@ -17,6 +18,11 @@ import java.util.List;
  */
 
 public class Fox extends AbstractNPC{
+
+    /**
+     * How close a goose must be to the fox to be scared away
+     */
+    private static final float SCARE_RADIUS = 200f;
 
     /**
      * Create a fox object at a given position. Initialises the sprite attribute to the fox png and the hitbox to sprite size.
@@ -89,6 +95,7 @@ public class Fox extends AbstractNPC{
     public AbstractEntity findClosestTarget(List<Goose> geese, AbstractEntity mainTarget){
         Goose closestGoose = null;
         float minDist = Float.MAX_VALUE;
+        float maxDist = 300f;
         for(Goose goose: geese){
             float dist = this.getPos().dst2(goose.getPos());
             if (dist < minDist){
@@ -96,6 +103,16 @@ public class Fox extends AbstractNPC{
                 closestGoose = goose;
             }
         }
-        return closestGoose != null ? closestGoose: mainTarget;
+
+        float targetDist = this.pos.dst2(mainTarget.getPos());
+        return minDist < targetDist ? closestGoose: mainTarget;
+    }
+
+    protected void applyEffect(GameMap gameMap, Player player) {
+        for (Goose goose : gameMap.getGeese()) {
+            if (goose.getPos().dst(player.getPos()) <= SCARE_RADIUS) {
+                goose.scare();
+            }
+        }
     }
 }

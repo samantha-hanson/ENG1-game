@@ -85,7 +85,7 @@ public class Main extends ApplicationAdapter {
         goose1 = new Goose(
             300,
             300,
-            2,
+            3,
             300,
             gameMap
         );
@@ -93,7 +93,7 @@ public class Main extends ApplicationAdapter {
         goose2 = new Goose(
             400,
             400,
-            2,
+            3,
             300,
             gameMap
         );
@@ -134,7 +134,7 @@ public class Main extends ApplicationAdapter {
             System.out.println("Long Boi has spawned!");
         }
 
-        if  (!fox_spawned && timer <= 135f) {
+        if  (!fox_spawned && timer <= 290f) {
             // spawns fox related to the players position
             Vector2 spawnPos = player.getPos().cpy().add(300, 300);
             fox = new Fox(
@@ -205,6 +205,7 @@ public class Main extends ApplicationAdapter {
         }
 
         if (fox != null) {
+            System.out.println(fox.findClosestTarget(gameMap.getGeese(), longBoi != null ? longBoi : player));
             fox.updateStatus(fox.findClosestTarget(gameMap.getGeese(), longBoi != null ? longBoi : player));
             fox.moveNPC();
             fox.draw(batch);
