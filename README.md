@@ -36,3 +36,6 @@ For example, `core:clean` removes `build` folder only from the `core` project.
 - All code should follow the [Google style guide](https://google.github.io/styleguide/javaguide.html).
 - Javadoc should be in traditional style.
 - Comments should be in sentence case, with correct grammar and with a single space after the `//`.
+
+## Copyright
+`./assets/yorkshirepudding.jpg` is copyright stef yau (original https://www.flickr.com/photos/49502976207@N01/77683987), cropped to 1:1, used under its CC BY 2.0 licence.

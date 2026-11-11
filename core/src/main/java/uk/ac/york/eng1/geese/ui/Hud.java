@@ -40,7 +40,7 @@ public class Hud {
         this.pixel = new Texture(pixmap);
         pixmap.dispose();
 
-        this.puddingIcon = new Texture("yorkshirepudding.png");
+        this.puddingIcon = new Texture("yorkshirepudding.jpg");
     }
 
     /**
