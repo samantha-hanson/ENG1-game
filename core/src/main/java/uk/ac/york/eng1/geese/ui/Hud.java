@@ -15,21 +15,24 @@ import uk.ac.york.eng1.geese.items.AbstractItems;
  * Shows the player's remaining Yorkshire pudding as a bar, and the inventory as a row of icons.
  */
 public class Hud {
-
+    /** margin, width, height, icon size, and slot gap ui */
     private static final float MARGIN = 20f;
     private static final float BAR_WIDTH = 200f;
     private static final float BAR_HEIGHT = 24f;
     private static final float ICON_SIZE = 48f;
     private static final float SLOT_GAP = 12f;
 
-    /** Fixed camera so the HUD stays in the same place on screen. */
+
     private final OrthographicCamera hudCamera = new OrthographicCamera();
 
-    /** A 1x1 white texture that is stretched and tinted to draw the bar rectangles. */
+
     private final Texture pixel;
     private final Texture puddingIcon;
     private final BitmapFont font = new BitmapFont();
 
+    /**
+     * Creates the HUD and loads its textures. Call once the graphics context is ready.
+     */
     public Hud() {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.WHITE);
@@ -58,6 +61,13 @@ public class Hud {
         batch.end();
     }
 
+    /**
+     * Draws the pudding icon and the food bar in the top-left corner.
+     *
+     * @param batch The SpriteBatch to draw with (must already be between begin() and end()).
+     * @param player The player whose remaining food is shown.
+     * @param worldHeight The height of the viewport, used to position the bar at the top.
+     */
     private void drawFoodBar(SpriteBatch batch, Player player, float worldHeight) {
         float iconY = worldHeight - MARGIN - ICON_SIZE;
         float barX = MARGIN + ICON_SIZE + 8f;
@@ -73,6 +83,13 @@ public class Hud {
         batch.draw(this.pixel, barX, barY, BAR_WIDTH * player.getFoodFraction(), BAR_HEIGHT);
     }
 
+    /**
+     * Draws the inventory as a row of icons along the bottom-left of the screen.
+     * Used-up items are greyed out, active items are tinted yellow, and each shows its uses left.
+     *
+     * @param batch The SpriteBatch to draw with (must already be between begin() and end()).
+     * @param player The player whose inventory is displayed.
+     */
     private void drawInventory(SpriteBatch batch, Player player) {
         float x = MARGIN;
         for (AbstractItems item : player.getInventory().getItems()) {
