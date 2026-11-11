@@ -9,8 +9,8 @@ import com.badlogic.gdx.math.Vector2;
 import uk.ac.york.eng1.geese.GameMap;
 
 /**
- * represents the player character, storing necessary information such as the current position of the player.
- *
+ * represents the player character, storing necessary information such as the current position of the player, the inventory,
+ * the disguise and food being held by the player
  * <p>
  * extends AbstractEntity by adding a way for the player to move the character in the movePlayer method.
  * </p>
@@ -62,10 +62,18 @@ public class Player extends AbstractEntity {
         this.gameMap.clampPosition(this.pos);
         this.hitbox.setPosition(this.pos);
     }
-    //Inventory
+
+    /**
+     * New inventory object
+     */
     private final Inventory inventory = new Inventory();
 
+    /**
+     * Getter to display items stored in the inventory
+     * @return Items stored in the inventory
+     */
     public Inventory getInventory() {
+
         return this.inventory;
     }
 
@@ -111,6 +119,22 @@ public class Player extends AbstractEntity {
      */
     public void setSprite(Texture sprite) {
         this.sprite = sprite;
+    }
+
+    /**
+     * Getter to displayer current player velocity
+     * @return Current velocity
+     */
+    public float getVel(){
+        return this.vel;
+    }
+
+    /**
+     * Setter to change player velocity when the player is disguised
+     * @param vel Velocity to set
+     */
+    public void setVel(float vel) {
+        this.vel = vel;
     }
 
     // Food (health)

@@ -3,6 +3,15 @@ package uk.ac.york.eng1.geese.items;
 import com.badlogic.gdx.graphics.Texture;
 import uk.ac.york.eng1.geese.GameMap;
 import uk.ac.york.eng1.geese.entities.Player;
+import uk.ac.york.eng1.geese.stats.GameStats;
+
+/**
+ * Represents the standard for defining future items
+ *
+ * <p>
+ *     Holds the common attributes and methods shared between all items in the game
+ * </p>
+ */
 
 public abstract class AbstractItems {
     /**
@@ -26,7 +35,7 @@ public abstract class AbstractItems {
     protected int usesRemaining;
 
     /**
-     * How long the Item's effect will last
+     * How long the Item's effect will last once used (seconds)
      */
     protected float effectDuration;
 
@@ -44,9 +53,9 @@ public abstract class AbstractItems {
      * Constructor to get each item to set up their corresponding values
      * @param name - Item name
      * @param description - What the item does
-     * @param sprite - How the item looks like
-     * @param uses - How many times the item can be use
-     * @param effectDuration - How long the item can be used for
+     * @param sprite - What the item looks like
+     * @param uses - How many times the item can be used
+     * @param effectDuration - How long the effect lasts once used (seconds)
      */
     protected AbstractItems(String name, String description, Texture sprite, int uses, float effectDuration){
         this.name = name;
@@ -60,7 +69,7 @@ public abstract class AbstractItems {
     /**
      *Method that actually activates the item to be used
      * @param gameMap Gives the item access to the world to interact with the geese
-     * @param player Tells the item to check the current player
+     * @param player The player using the item
      * @return true if the item was used, false if it couldn't be
      */
     public boolean use(GameMap gameMap,Player player){
@@ -92,18 +101,24 @@ public abstract class AbstractItems {
     /**
      * Applies this item's effect when it is used.
      * Will be overridden by each item subclass
+     *
+     * @param gameMap Passed to the item so its effect can reach the geese.
+     * @param player The player using the item.
      */
     protected abstract void applyEffect(GameMap gameMap, Player player);
 
     /**
      * Reverses the item's effect when it ends.
-     * Will be overwritten by each item subclass
+     * Will be overridden by each item subclass
+     *
+     * @param gameMap Passed to the item so its effect can reach the geese.
+     * @param player The player using the item.
      */
     protected abstract void endEffect(GameMap gameMap, Player player);
 
     /**
      * Method that checks whether the item can be used
-     * Checks if the item still has uses left and if the item is currently active
+     * Checks if the item still has uses left and if the item is currently not active
      * @return true if the item can still be used and is currently INACTIVE
      */
     public boolean canUse(){
@@ -131,7 +146,7 @@ public abstract class AbstractItems {
 
     /**
      * Getter to check the current status of the item
-     * @return Displays the item's current status
+     * @return The item's current status
      */
     public Item_Status getStatus(){
         return this.status;
@@ -139,7 +154,7 @@ public abstract class AbstractItems {
 
     /**
      * Getter to display the item's name
-     * @return Displays the name as a String
+     * @return The name as a String
      */
     public String getName(){
         return this.name;
@@ -147,15 +162,15 @@ public abstract class AbstractItems {
 
     /**
      * Getter to display the item's description
-     * @return Displays the description
+     * @return The description
      */
     public String getDescription(){
         return this.description;
     }
 
     /**
-     *Checks the sprite icon to display in the inventory
-     * @return Displays the sprite into the inventory
+     *Gets the sprite icon to display in the inventory
+     * @return The sprite into the inventory
      */
     public Texture getIcon(){
         return this.sprite;
@@ -163,8 +178,6 @@ public abstract class AbstractItems {
 
     /**
      * Frees the memory used by the item's texture. Called by Inventory.dispose().
-     * Fixed: Inventory.dispose() was calling this method but it did not exist. Textures are not freed
-     * automatically, so without it, they would stay in graphics memory.
      */
     public void dispose(){
         if(this.sprite != null) {
@@ -172,7 +185,11 @@ public abstract class AbstractItems {
         }
     }
 
-    /** getter to show how many uses left in item */
+    /**
+     * Getter to show how many uses left in item
+     *
+     * @return Number of uses remaining for the item
+     */
     public int getUsesRemaining() {
         return this.usesRemaining;
     }

@@ -42,7 +42,8 @@ public class Goose extends AbstractNPC {
     /**
      * {@inheritDoc}
      * implementation note: A scared goose runs directly away from the passed entity. Otherwise, the goose targets the
-     * passed entity if it is within the vision of the goose, and updates its wandering behaviour if not.
+     * passed entity if it is within the vision of the goose, and updates its wandering behaviour if not. This only occurs
+     * if the passed entity is a player.
      * Additionally, disguised players are ignored by the geese and not targeted
      *
      */
@@ -59,7 +60,7 @@ public class Goose extends AbstractNPC {
 
         float distance = this.pos.dst(entPos);
 
-        // Check if the entity is within sight and approach & if they are disguised
+        // Check if the entity is within sight and approach & if they are not disguised
         if(entity instanceof Player player) {
             //If the player isn't disguised and within the visualRadius -> start Targeting
             if (distance <= this.visualRadius && !player.getDisguised()) {
@@ -103,5 +104,13 @@ public class Goose extends AbstractNPC {
         if (this.status == Status.SCARED) {
             this.status = Status.IDLE;
         }
+    }
+
+    /**
+     * Displaying the status of the goose object
+     * @return Current Status of the goose
+     */
+    public Status getStatus(){
+        return this.status;
     }
 }
