@@ -95,8 +95,9 @@ public class Fox extends AbstractNPC{
     public AbstractEntity findClosestTarget(List<Goose> geese, AbstractEntity mainTarget){
         Goose closestGoose = null;
         float minDist = Float.MAX_VALUE;
-        float maxDist = 300f;
+        float maxDist = 200f;
         for(Goose goose: geese){
+            goose.calm();
             float dist = this.getPos().dst2(goose.getPos());
             if (dist < minDist){
                 minDist = dist;
@@ -105,14 +106,11 @@ public class Fox extends AbstractNPC{
         }
 
         float targetDist = this.pos.dst2(mainTarget.getPos());
-        return minDist < targetDist ? closestGoose: mainTarget;
+        if (minDist < targetDist){
+            closestGoose.scare();
+            return closestGoose;
+        }
+        return mainTarget;
     }
 
-    protected void applyEffect(GameMap gameMap, Player player) {
-        for (Goose goose : gameMap.getGeese()) {
-            if (goose.getPos().dst(player.getPos()) <= SCARE_RADIUS) {
-                goose.scare();
-            }
-        }
-    }
 }

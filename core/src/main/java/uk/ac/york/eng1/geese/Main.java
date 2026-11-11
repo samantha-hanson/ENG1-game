@@ -205,7 +205,6 @@ public class Main extends ApplicationAdapter {
         }
 
         if (fox != null) {
-            System.out.println(fox.findClosestTarget(gameMap.getGeese(), longBoi != null ? longBoi : player));
             fox.updateStatus(fox.findClosestTarget(gameMap.getGeese(), longBoi != null ? longBoi : player));
             fox.moveNPC();
             fox.draw(batch);
