@@ -51,7 +51,7 @@ public class Airhorn extends AbstractItems {
      */
     @Override
     protected void applyEffect(GameMap gameMap, Player player) {
-        sound.play();
+        sound.play(0.1f);
         for (Goose goose : gameMap.getGeese()) {
             if (goose.getPos().dst(player.getPos()) <= SCARE_RADIUS) {
                 goose.scare();
