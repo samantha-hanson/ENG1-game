@@ -6,6 +6,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -18,6 +19,11 @@ public class GameMap {
     final private float mapBoundRight;
     final private float mapBoundRoof;
     final private float mapBoundFloor;
+
+    final private int mapWidthInTiles;
+    final private int mapHeightInTiles;
+    final private float tileWidthInWorld;
+    final private float tileHeightInWorld;
 
     private TiledMap tileMap;
     private MapProperties mapProps;
@@ -35,13 +41,18 @@ public class GameMap {
         this.mapProps = this.tileMap.getProperties();
         this.renderer = new OrthogonalTiledMapRenderer(this.tileMap, unitScale);
 
+        // Store the map dimensions in tiles and in world units so callers can convert tile coordinates.
+        this.mapWidthInTiles = this.mapProps.get("width", Integer.class);
+        this.mapHeightInTiles = this.mapProps.get("height", Integer.class);
+        this.tileWidthInWorld = this.mapProps.get("tilewidth", Integer.class) * unitScale;
+        this.tileHeightInWorld = this.mapProps.get("tileheight", Integer.class) * unitScale;
 
         // Set world boundaries using loaded map.
         // Left and Floor are always 0.
         this.mapBoundLeft = 0f;
-        this.mapBoundRight = this.mapProps.get("width", Integer.class) * mapProps.get("tilewidth", Integer.class) * unitScale;
+        this.mapBoundRight = this.mapWidthInTiles * this.tileWidthInWorld;
         this.mapBoundFloor = 0;
-        this.mapBoundRoof = this.mapProps.get("height", Integer.class) * mapProps.get("tileheight", Integer.class) * unitScale;
+        this.mapBoundRoof = this.mapHeightInTiles * this.tileHeightInWorld;
     }
 
     /**
@@ -63,6 +74,41 @@ public class GameMap {
     public void clampPosition(Vector2 pos){
         pos.x = MathUtils.clamp(pos.x, this.mapBoundLeft, this.mapBoundRight);
         pos.y = MathUtils.clamp(pos.y, this.mapBoundFloor, this.mapBoundRoof);
+    }
+
+    /**
+     * Converts a block of tiles into the world-space rectangle it covers.
+     *
+     * <p>
+     * Tile rows are passed top-down, matching the Tiled editor, while world y coordinates grow upwards.
+     * </p>
+     *
+     * @param tileX     The left-most tile column of the block.
+     * @param tileY     The top-most tile row of the block, counted from the top of the map.
+     * @param tilesWide The width of the block in tiles.
+     * @param tilesTall The height of the block in tiles.
+     * @return The world-space rectangle covered by the block, with its origin at the bottom-left corner.
+     */
+    public Rectangle getTileBounds(int tileX, int tileY, int tilesWide, int tilesTall){
+        float x = tileX * this.tileWidthInWorld;
+        float y = (this.mapHeightInTiles - tileY - tilesTall) * this.tileHeightInWorld;
+        return new Rectangle(x, y, tilesWide * this.tileWidthInWorld, tilesTall * this.tileHeightInWorld);
+    }
+
+    /**
+     * Fetch the map dimensions in tiles.
+     * @return the map width as the first element and the map height as the second element.
+     */
+    public int[] getSizeInTiles(){
+        return new int[]{this.mapWidthInTiles, this.mapHeightInTiles};
+    }
+
+    /**
+     * Fetch the size of a single tile in world units.
+     * @return the tile width as the first element and the tile height as the second element.
+     */
+    public float[] getTileSizeInWorld(){
+        return new float[]{this.tileWidthInWorld, this.tileHeightInWorld};
     }
 
     /**

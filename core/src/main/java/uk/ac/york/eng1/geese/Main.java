@@ -2,7 +2,10 @@ package uk.ac.york.eng1.geese;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -12,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import uk.ac.york.eng1.geese.entities.GoalZone;
 import uk.ac.york.eng1.geese.entities.NPC.Goose;
 import uk.ac.york.eng1.geese.entities.Player;
 
@@ -25,12 +29,29 @@ import com.badlogic.gdx.maps.MapProperties;
  */
 public class Main extends ApplicationAdapter {
     private static final float TOTAL_TIME = 300F;
+
+    // Start point A: the bottom-left tile of the map, (0, 19) in Tiled coordinates.
+    private static final int START_TILE_X = 0;
+    private static final int START_TILE_Y = 19;
+
+    // Goal point B: the top-most yellow rectangle in the top-right corner of the map,
+    // which covers tiles (21, 1) and (21, 2) in Tiled coordinates.
+    private static final int GOAL_TILE_X = 21;
+    private static final int GOAL_TILE_Y = 1;
+    private static final int GOAL_TILES_WIDE = 1;
+    private static final int GOAL_TILES_TALL = 2;
+
     private SpriteBatch batch;
 
     private Player player;
     private Goose goose1;
     private Goose goose2;
     private Goose[] gooseArray;
+
+    private GoalZone startPoint;
+    private GoalZone goalPoint;
+    private Texture pixel;
+    private GlyphLayout markerLayout;
 
     private OrthographicCamera camera;
     private Viewport viewport;
@@ -51,13 +72,26 @@ public class Main extends ApplicationAdapter {
         camera = new OrthographicCamera();
         viewport = new ExtendViewport(800, 600, camera);
 
+        // A 1x1 white texture used to draw the coloured rectangles of the start and goal zones.
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.WHITE);
+        pixmap.fill();
+        pixel = new Texture(pixmap);
+        pixmap.dispose();
+
         // load the map, and constrict entity movement
         float unitScale = 5f;
         gameMap = new GameMap("mapdummy.tmx", unitScale);
 
+        // The player starts at A, in the centre of the bottom-left tile, and has to reach B.
+        startPoint = new GoalZone(gameMap.getTileBounds(START_TILE_X, START_TILE_Y, 1, 1),
+            "A", Color.SKY);
+        goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
+            "B", Color.YELLOW);
+
         player = new Player(
-            100,
-            100,
+            startPoint.getCentre().x,
+            startPoint.getCentre().y,
             10,
             gameMap
         );
@@ -89,6 +123,7 @@ public class Main extends ApplicationAdapter {
         timerFont = new BitmapFont();
         timerFont.getData().setScale(2f);
         timerLayout = new GlyphLayout();
+        markerLayout = new GlyphLayout();
     }
 
     // Per frame behaviour
@@ -113,6 +148,10 @@ public class Main extends ApplicationAdapter {
         batch.begin();
         player.movePlayer();
 
+        // Draw the start and goal markers beneath the entities so the player is always visible.
+        startPoint.draw(batch, pixel, timerFont, markerLayout);
+        goalPoint.draw(batch, pixel, timerFont, markerLayout);
+
         for (Goose goose : gooseArray) {
             goose.updateStatus(player);
             goose.moveNPC();
@@ -123,10 +162,18 @@ public class Main extends ApplicationAdapter {
         batch.end();
         //----------batch ends----------
 
+        // Check whether the player has reached B. The timer stops once the goal is reached.
+        if (!goalPoint.isReached() && goalPoint.isOccupiedBy(player)) {
+            goalPoint.setReached(true);
+            System.out.println("Player reached goal B");
+        }
+
         //----------HUD: 5-minute countdown timer in the top-right corner----------
-        timer -= Gdx.graphics.getDeltaTime();
-        if (timer < 0f) {
-            timer = 0f;
+        if (!goalPoint.isReached()) {
+            timer -= Gdx.graphics.getDeltaTime();
+            if (timer < 0f) {
+                timer = 0f;
+            }
         }
 
         int minutes = (int) (timer / 60);
@@ -143,6 +190,14 @@ public class Main extends ApplicationAdapter {
         timerFont.draw(batch, timeText,
             Gdx.graphics.getWidth() - timerLayout.width - padding,
             Gdx.graphics.getHeight() - padding);
+
+        if (goalPoint.isReached()) {
+            String goalText = "Goal B reached!";
+            markerLayout.setText(timerFont, goalText);
+            timerFont.draw(batch, markerLayout,
+                (Gdx.graphics.getWidth() - markerLayout.width) / 2f,
+                Gdx.graphics.getHeight() / 2f);
+        }
         batch.end();
         //----------HUD ends----------
     }
@@ -152,6 +207,7 @@ public class Main extends ApplicationAdapter {
     public void dispose() {
         batch.dispose();
         timerFont.dispose();
+        pixel.dispose();
         gameMap.dispose();
     }
 }
