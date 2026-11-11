@@ -18,10 +18,10 @@ import java.util.List;
  */
 public class GameMap {
 
-    final private float mapBoundLeft;
-    final private float mapBoundRight;
-    final private float mapBoundRoof;
-    final private float mapBoundFloor;
+    final public float mapBoundLeft;
+    final public float mapBoundRight;
+    final public float mapBoundRoof;
+    final public float mapBoundFloor;
 
     private TiledMap tileMap;
     private MapProperties mapProps;
