@@ -87,7 +87,7 @@ public class Main extends ApplicationAdapter {
         startPoint = new GoalZone(gameMap.getTileBounds(START_TILE_X, START_TILE_Y, 1, 1),
             "A", Color.SKY);
         goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
-            "B", Color.YELLOW);
+            "B", Color.MAGENTA);
 
         player = new Player(
             startPoint.getCentre().x,

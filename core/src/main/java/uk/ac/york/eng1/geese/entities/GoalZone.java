@@ -89,7 +89,7 @@ public class GoalZone {
 
         // Centre the label inside the region, restoring the font colour afterwards so the HUD is unaffected.
         Color previousColour = font.getColor().cpy();
-        font.setColor(this.colour);
+        font.setColor(Color.WHITE);
         layout.setText(font, this.label);
         font.draw(batch, layout,
             this.bounds.x + (this.bounds.width - layout.width) / 2f,
