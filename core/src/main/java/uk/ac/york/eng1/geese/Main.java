@@ -125,10 +125,6 @@ public class Main extends ApplicationAdapter {
 
                 pos_x = camera.position.x + offset_x;
                 pos_y = camera.position.y + offset_y;
-
-                System.out.println(pos_x);
-                System.out.println(pos_y);
-
             } while (pos_x < gameMap.mapBoundLeft || pos_x > gameMap.mapBoundRight
                 || pos_y < gameMap.mapBoundFloor || pos_y > gameMap.mapBoundRoof);
             var goose = new Goose(
