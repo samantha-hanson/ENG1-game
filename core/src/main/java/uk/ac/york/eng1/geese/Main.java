@@ -117,19 +117,20 @@ public class Main extends ApplicationAdapter {
         player.getInventory().update(Gdx.graphics.getDeltaTime(), gameMap, player);
 
         if (RANDOM.nextDouble() < (Gdx.graphics.getDeltaTime() * GOOSE_SPAWN_CHANCE)) {
-            double pos_x, pos_y;
+            double posX;
+            double posY;
             do {
-                var angle = RANDOM.nextDouble(2 * Math.PI);
-                var offset_x = SPAWN_RADIUS * Math.sin(angle);
-                var offset_y = SPAWN_RADIUS * Math.cos(angle);
+                double angle = RANDOM.nextDouble(2 * Math.PI);
+                double offsetX = SPAWN_RADIUS * Math.sin(angle);
+                double offsetY = SPAWN_RADIUS * Math.cos(angle);
 
-                pos_x = camera.position.x + offset_x;
-                pos_y = camera.position.y + offset_y;
-            } while (pos_x < gameMap.mapBoundLeft || pos_x > gameMap.mapBoundRight
-                || pos_y < gameMap.mapBoundFloor || pos_y > gameMap.mapBoundRoof);
+                posX = camera.position.x + offsetX;
+                posY = camera.position.y + offsetY;
+            } while (posX < gameMap.mapBoundLeft || posX > gameMap.mapBoundRight
+                || posY < gameMap.mapBoundFloor || posY > gameMap.mapBoundRoof);
             var goose = new Goose(
-                (float) pos_x,
-                (float) pos_y,
+                (float) posX,
+                (float) posY,
                 2,
                 300,
                 gameMap
