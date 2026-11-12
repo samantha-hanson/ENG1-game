@@ -121,7 +121,7 @@ public class Main extends ApplicationAdapter {
             do {
                 var angle = RANDOM.nextDouble(2 * Math.PI);
                 var offset_x = SPAWN_RADIUS * Math.sin(angle);
-                var offset_y = SPAWN_RADIUS * Math.sin(angle);
+                var offset_y = SPAWN_RADIUS * Math.cos(angle);
 
                 pos_x = camera.position.x + offset_x;
                 pos_y = camera.position.y + offset_y;
