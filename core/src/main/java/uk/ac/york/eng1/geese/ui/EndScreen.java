@@ -87,4 +87,4 @@ public class EndScreen {
         this.titleFont.dispose();
         this.textFont.dispose();
     }
-}           
+}
