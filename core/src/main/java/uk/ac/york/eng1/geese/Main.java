@@ -86,6 +86,7 @@ public class Main extends ApplicationAdapter {
     private static final double SPAWN_RADIUS = 500;
     private static final Random RANDOM = new Random();
 
+    private int gooseDisposeCounter = 0;
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -258,11 +259,9 @@ public class Main extends ApplicationAdapter {
         while(it.hasNext()){
             Goose goose = it.next();
             if(goose.getStatus() == Status.SCARED && player.getPos().dst2(goose.getPos()) > 250000f){
-                System.out.println(player.getPos().dst2(goose.getPos()));
-                System.out.println(goose.getStatus() == Status.SCARED );
-                System.out.println(player.getPos().dst2(goose.getPos()) > 4000f);
                 goose.dispose();
                 it.remove();
+                gooseDisposeCounter ++ ;
             } else{
                 goose.updateStatus(player);
                 goose.moveNPC();
