@@ -116,8 +116,11 @@ public class GameMap {
      * Fetch the size of a single tile in world units.
      * @return the tile width as the first element and the tile height as the second element.
      */
-    public float[] getTileSizeInWorld(){
+    public float[] getTileSizeInWorld() {
         return new float[]{this.tileWidthInWorld, this.tileHeightInWorld};
+    }
+
+    /**
      * Adds a goose to the map so that it can be found through getGeese.
      *
      * @param goose The goose to add to the map.
