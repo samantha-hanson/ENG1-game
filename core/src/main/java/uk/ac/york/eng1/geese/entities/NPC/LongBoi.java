@@ -93,7 +93,9 @@ public class LongBoi extends AbstractNPC{
      * Makes long boi flee from the player until calm is called.
      */
     public void scare() {
+
         this.status = Status.SCARED;
+        this.vel = 50f;
     }
 
     /**
