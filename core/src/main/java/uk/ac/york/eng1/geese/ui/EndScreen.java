@@ -23,6 +23,13 @@ public class EndScreen {
     private final BitmapFont textFont = new BitmapFont();
     private final GlyphLayout layout = new GlyphLayout();
 
+    /** The ways the game can end. */
+    public enum Result {
+        LOST,          // ran out of food
+        REACHED_GOAL,  // reached zone B
+        SURVIVED       // timer ran out
+    }
+
     /**
      * Creates the end screen and loads its resources. Call once the graphics context is ready.
      */
@@ -43,9 +50,9 @@ public class EndScreen {
      *
      * @param batch The shared SpriteBatch (must NOT be between begin() and end()).
      * @param viewport The game viewport, used to size the screen to the window.
-     * @param secondsSurvived How long the player lasted, in seconds.
+     * @param secondsElapsed How long the player lasted, in seconds.
      */
-    public void draw(SpriteBatch batch, Viewport viewport, float secondsSurvived) {
+    public void draw(SpriteBatch batch, Viewport viewport, Result result, float secondsElapsed) {
         float w = viewport.getWorldWidth();
         float h = viewport.getWorldHeight();
         this.screenCamera.setToOrtho(false, w, h);
@@ -58,13 +65,29 @@ public class EndScreen {
         batch.draw(this.pixel, 0, 0, w, h);
         batch.setColor(Color.WHITE);
 
-        drawCentred(batch, this.titleFont, "GAME OVER", w, h * 0.65f);
-        drawCentred(batch, this.textFont, "The geese ate all your Yorkshire pudding!", w, h * 0.50f);
+        int minutes = (int) (secondsElapsed / 60);
+        int seconds = (int) (secondsElapsed % 60);
+        String timeText = String.format("%02d:%02d", minutes, seconds);
 
-        int minutes = (int) (secondsSurvived / 60);
-        int seconds = (int) (secondsSurvived % 60);
-        drawCentred(batch, this.textFont,
-            String.format("You survived %02d:%02d", minutes, seconds), w, h * 0.42f);
+        switch (result) {
+            case REACHED_GOAL:
+                this.titleFont.setColor(Color.GREEN);
+                drawCentred(batch, this.titleFont, "YOU ESCAPED!", w, h * 0.65f);
+                drawCentred(batch, this.textFont, "You got your Yorkshire pudding to safety!", w, h * 0.50f);
+                drawCentred(batch, this.textFont, "Time taken: " + timeText, w, h * 0.42f);
+                break;
+            case SURVIVED:
+                this.titleFont.setColor(Color.GREEN);
+                drawCentred(batch, this.titleFont, "YOU SURVIVED!", w, h * 0.65f);
+                drawCentred(batch, this.textFont, "You kept your Yorkshire pudding safe!", w, h * 0.50f);
+                break;
+            default: // LOST
+                this.titleFont.setColor(Color.RED);
+                drawCentred(batch, this.titleFont, "GAME OVER", w, h * 0.65f);
+                drawCentred(batch, this.textFont, "The geese ate all your Yorkshire pudding!", w, h * 0.50f);
+                drawCentred(batch, this.textFont, "You survived " + timeText, w, h * 0.42f);
+                break;
+        }
 
         drawCentred(batch, this.textFont, "Press R to restart   |   Press ESC to quit", w, h * 0.30f);
 
