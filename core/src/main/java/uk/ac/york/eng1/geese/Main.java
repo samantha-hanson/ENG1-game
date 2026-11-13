@@ -45,6 +45,10 @@ public class Main extends ApplicationAdapter {
     private static final int START_TILE_X = 0;
     private static final int START_TILE_Y = 19;
 
+    private static final int FOX_TILE_X = 8;
+    private static final int FOX_TILE_Y = 8;
+
+
     // Goal point B: the top-most yellow rectangle in the top-right corner of the map,
     // which covers tiles (21, 1) and (21, 2) in Tiled coordinates.
     private static final int GOAL_TILE_X = 21;
@@ -64,6 +68,7 @@ public class Main extends ApplicationAdapter {
 
     private GoalZone startPoint;
     private GoalZone goalPoint;
+    private GoalZone foxPoint;
     private Texture pixel;
     private GlyphLayout markerLayout;
 
@@ -122,6 +127,7 @@ public class Main extends ApplicationAdapter {
         goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
             "B", Color.MAGENTA);
 
+
         player = new Player(
             startPoint.getCentre().x,
             startPoint.getCentre().y,
@@ -171,19 +177,30 @@ public class Main extends ApplicationAdapter {
             System.out.println("Long Boi has spawned!");
         }
 
-        if  (!fox_spawned && timer <= 280f) {
-            // spawns fox related to the players position
-            Vector2 spawnPos = player.getPos().cpy().add(300, 300);
-            fox = new Fox(
-                spawnPos.x,
-                spawnPos.y,
-                3,
-                500,
-                gameMap
-            );
-            fox_spawned = true;
-            System.out.println("fox has spawned!");
+
+        if (timer <= 280f){
+            foxPoint = new GoalZone(gameMap.getTileBounds(FOX_TILE_X, FOX_TILE_Y, 1, 1),
+                "Den", Color.GREEN);
         }
+
+        if (foxPoint != null && !foxPoint.isReached() && foxPoint.isOccupiedBy(player)) {
+            foxPoint.setReached(true);
+            if  (!fox_spawned) {
+                // spawns fox related to the players position
+                Vector2 spawnPos = player.getPos();
+                fox = new Fox(
+                    spawnPos.x,
+                    spawnPos.y,
+                    3,
+                    500,
+                    gameMap
+                );
+                fox_spawned = true;
+                System.out.println("fox has spawned!");
+            }
+        }
+
+
         // ---spawn logic ends---
 
         // Load map and set up camera
@@ -254,6 +271,10 @@ public class Main extends ApplicationAdapter {
         // Draw the start and goal markers beneath the entities so the player is always visible.
         startPoint.draw(batch, pixel, timerFont, markerLayout);
         goalPoint.draw(batch, pixel, timerFont, markerLayout);
+
+        if(foxPoint != null){
+            foxPoint.draw(batch, pixel, timerFont, markerLayout);
+        }
 
         Iterator<Goose> it = gameMap.getGeese().iterator();
         while(it.hasNext()){
