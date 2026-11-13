@@ -50,6 +50,7 @@ public class EndScreen {
      *
      * @param batch The shared SpriteBatch (must NOT be between begin() and end()).
      * @param viewport The game viewport, used to size the screen to the window.
+     * @param result The possible endings; LOST, REACHED_GOAL, SURVIVED
      * @param secondsElapsed How long the player lasted, in seconds.
      */
     public void draw(SpriteBatch batch, Viewport viewport, Result result, float secondsElapsed) {
