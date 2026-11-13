@@ -161,7 +161,7 @@ public class Main extends ApplicationAdapter {
             fox = new Fox(
                 spawnPos.x,
                 spawnPos.y,
-                2,
+                3,
                 500,
                 gameMap
             );
@@ -262,12 +262,11 @@ public class Main extends ApplicationAdapter {
         }
 
         if (fox != null) {
-            AbstractEntity target = fox.findClosestTarget(gameMap.getGeese(), longBoi != null ? longBoi : player);
+            AbstractEntity target = (longBoi != null ? longBoi : player);
             if (target instanceof LongBoi){
                 longBoi.scare();
-            }
-            else{
-                longBoi.calm();
+                longBoi.dispose();
+                longBoi = null;
             }
             fox.updateStatus(target);
             fox.moveNPC();
