@@ -36,7 +36,7 @@ public class GameMap {
     /**
      * All geese currently on the map. Lets items such as the Airhorn reach them through the GameMap.
      */
-    private final List<Goose> geese = new ArrayList<>();
+    private List<Goose> geese = new ArrayList<>();
 
     /**
      * Creates a GameMap object using the txm object and LIBGDX's TiledMap class. Initialises the world
@@ -135,7 +135,7 @@ public class GameMap {
      * @return A read-only copy of the list of geese. The Goose objects inside are the real ones, not copies.
      */
     public List<Goose> getGeese(){
-        return List.copyOf(this.geese);
+        return this.geese;
     }
 
     /**

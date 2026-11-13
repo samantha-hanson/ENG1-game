@@ -66,4 +66,8 @@ public abstract class AbstractEntity {
      * @return Rectangle representing the hitbox.
      */
     public Rectangle getHitbox(){ return this.hitbox; }
+
+    public void dispose(){
+        this.sprite.dispose();
+    }
 }

@@ -31,6 +31,7 @@ import uk.ac.york.eng1.geese.items.Airhorn;
 import uk.ac.york.eng1.geese.items.Goosedisguise;
 import uk.ac.york.eng1.geese.ui.Hud;
 
+import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -219,7 +220,7 @@ public class Main extends ApplicationAdapter {
 
             posX = camera.position.x + offsetX;
             posY = camera.position.y + offsetY;
-            
+
             var goose = new Goose(
                 (float) posX,
                 (float) posY,
@@ -237,10 +238,19 @@ public class Main extends ApplicationAdapter {
         // Draw the start and goal markers beneath the entities so the player is always visible.
         startPoint.draw(batch, pixel, timerFont, markerLayout);
         goalPoint.draw(batch, pixel, timerFont, markerLayout);
-        for (Goose goose : gameMap.getGeese()) {
-            goose.updateStatus(player);
-            goose.moveNPC();
-            goose.draw(batch);
+
+        Iterator<Goose> it = gameMap.getGeese().iterator();
+        while(it.hasNext()){
+            Goose goose = it.next();
+            if(goose.getStatus() == Status.SCARED && player.getPos().dst2(goose.getPos()) > 400f){
+                System.out.println(gameMap.getGeese());
+                goose.dispose();
+                it.remove();
+            } else{
+                goose.updateStatus(player);
+                goose.moveNPC();
+                goose.draw(batch);
+            }
         }
 
         if (longBoi != null) {
@@ -290,9 +300,9 @@ public class Main extends ApplicationAdapter {
         // of the window regardless of where the camera is.
         batch.getProjectionMatrix().setToOrtho2D(0, 0,
             Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-      
+
         batch.begin();
-      
+
         float padding = 20f;
         timerFont.draw(batch, timeText,
             Gdx.graphics.getWidth() - timerLayout.width - padding,
