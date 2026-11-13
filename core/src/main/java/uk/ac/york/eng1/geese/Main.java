@@ -49,6 +49,10 @@ public class Main extends ApplicationAdapter {
     private static final int START_TILE_X = 0;
     private static final int START_TILE_Y = 19;
 
+    private static final int FOX_TILE_X = 8;
+    private static final int FOX_TILE_Y = 8;
+
+
     // Goal point B: the top-most yellow rectangle in the top-right corner of the map,
     // which covers tiles (21, 1) and (21, 2) in Tiled coordinates.
     private static final int GOAL_TILE_X = 21;
@@ -68,6 +72,7 @@ public class Main extends ApplicationAdapter {
 
     private GoalZone startPoint;
     private GoalZone goalPoint;
+    private GoalZone foxPoint;
     private Texture pixel;
     private GlyphLayout markerLayout;
 
@@ -98,6 +103,7 @@ public class Main extends ApplicationAdapter {
     private static final double SPAWN_RADIUS = 500;
     private static final Random RANDOM = new Random();
 
+    private int gooseDisposeCounter = 0;
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -125,7 +131,7 @@ public class Main extends ApplicationAdapter {
 
         // load the map, and constrict entity movement
         float unitScale = 5f;
-        gameMap = new GameMap("mapdummy.tmx", unitScale);
+        gameMap = new GameMap("park.tmx", unitScale);
         // Goal zone B: a 3x3 tile block in the top-right corner of the map
         Pixmap pixmap1 = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap1.setColor(Color.WHITE);
@@ -145,6 +151,7 @@ public class Main extends ApplicationAdapter {
             "A", Color.SKY);
         goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
             "B", Color.MAGENTA);
+
 
         player = new Player(
             startPoint.getCentre().x,
@@ -195,19 +202,30 @@ public class Main extends ApplicationAdapter {
             System.out.println("Long Boi has spawned!");
         }
 
-        if  (!fox_spawned && timer <= 280f) {
-            // spawns fox related to the players position
-            Vector2 spawnPos = player.getPos().cpy().add(300, 300);
-            fox = new Fox(
-                spawnPos.x,
-                spawnPos.y,
-                2,
-                500,
-                gameMap
-            );
-            fox_spawned = true;
-            System.out.println("fox has spawned!");
+
+        if (timer <= 280f){
+            foxPoint = new GoalZone(gameMap.getTileBounds(FOX_TILE_X, FOX_TILE_Y, 1, 1),
+                "Den", Color.GREEN);
         }
+
+        if (foxPoint != null && !foxPoint.isReached() && foxPoint.isOccupiedBy(player)) {
+            foxPoint.setReached(true);
+            if  (!fox_spawned) {
+                // spawns fox related to the players position
+                Vector2 spawnPos = player.getPos();
+                fox = new Fox(
+                    spawnPos.x,
+                    spawnPos.y,
+                    3,
+                    500,
+                    gameMap
+                );
+                fox_spawned = true;
+                System.out.println("fox has spawned!");
+            }
+        }
+
+
         // ---spawn logic ends---
 
         // Load map and set up camera
@@ -226,7 +244,7 @@ public class Main extends ApplicationAdapter {
             }
         }
         if (longBoi != null) {
-            if (longBoi.getStatus() != Status.SCARED && player.getHitbox().overlaps(longBoi.getHitbox())) {
+            if (longBoi.getStatus() != Status.SCARED && !player.getDisguised() && player.getHitbox().overlaps(longBoi.getHitbox())) {
                 player.loseFood(BITE_AMOUNT);
 
             }
@@ -279,15 +297,17 @@ public class Main extends ApplicationAdapter {
         startPoint.draw(batch, pixel, timerFont, zoneLayout);
         goalB.draw(batch, zonePixel, zoneFont, zoneLayout);
 
+        if(foxPoint != null){
+            foxPoint.draw(batch, pixel, timerFont, markerLayout);
+        }
+
         Iterator<Goose> it = gameMap.getGeese().iterator();
         while(it.hasNext()){
             Goose goose = it.next();
             if(goose.getStatus() == Status.SCARED && player.getPos().dst2(goose.getPos()) > 250000f){
-                System.out.println(player.getPos().dst2(goose.getPos()));
-                System.out.println(goose.getStatus() == Status.SCARED );
-                System.out.println(player.getPos().dst2(goose.getPos()) > 4000f);
                 goose.dispose();
                 it.remove();
+                gooseDisposeCounter ++ ;
             } else{
                 goose.updateStatus(player);
                 goose.moveNPC();
@@ -302,12 +322,11 @@ public class Main extends ApplicationAdapter {
         }
 
         if (fox != null) {
-            AbstractEntity target = fox.findClosestTarget(gameMap.getGeese(), longBoi != null ? longBoi : player);
+            AbstractEntity target = (longBoi != null ? longBoi : player);
             if (target instanceof LongBoi){
                 longBoi.scare();
-            }
-            else{
-                longBoi.calm();
+                longBoi.dispose();
+                longBoi = null;
             }
             fox.updateStatus(target);
             fox.moveNPC();
@@ -319,6 +338,7 @@ public class Main extends ApplicationAdapter {
         if (player.isOutOfFood()) {
             gameOver = true;
             result = EndScreen.Result.LOST;
+          
         } else if (goalB.isOccupiedBy(player)) {
             gameOver = true;
             result = EndScreen.Result.REACHED_GOAL;
@@ -414,6 +434,7 @@ public class Main extends ApplicationAdapter {
         player.getInventory().dispose();
         hud.dispose();
         endScreen.dispose();
+      
         zonePixel.dispose();
         zoneFont.dispose();
 
