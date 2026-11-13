@@ -202,7 +202,7 @@ public class Main extends ApplicationAdapter {
             }
         }
         if (longBoi != null) {
-            if (longBoi.getStatus() != Status.SCARED && player.getHitbox().overlaps(longBoi.getHitbox())) {
+            if (longBoi.getStatus() != Status.SCARED && !player.getDisguised() && player.getHitbox().overlaps(longBoi.getHitbox())) {
                 player.loseFood(BITE_AMOUNT);
 
             }
