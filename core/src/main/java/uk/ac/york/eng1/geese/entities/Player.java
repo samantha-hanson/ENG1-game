@@ -1,16 +1,16 @@
 package uk.ac.york.eng1.geese.entities;
+import uk.ac.york.eng1.geese.items.Inventory;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import uk.ac.york.eng1.geese.GameMap;
 
 /**
- * represents the player character, storing necessary information such as the current position of the player.
- *
+ * represents the player character, storing necessary information such as the current position of the player, the inventory,
+ * the disguise and food being held by the player
  * <p>
  * extends AbstractEntity by adding a way for the player to move the character in the movePlayer method.
  * </p>
@@ -62,4 +62,125 @@ public class Player extends AbstractEntity {
         this.gameMap.clampPosition(this.pos);
         this.hitbox.setPosition(this.pos);
     }
+
+    /**
+     * New inventory object
+     */
+    private final Inventory inventory = new Inventory();
+
+    /**
+     * Getter to display items stored in the inventory
+     * @return Items stored in the inventory
+     */
+    public Inventory getInventory() {
+
+        return this.inventory;
+    }
+
+
+    //Is disguised behavior
+    /**
+     * Whether the player is currently wearing the goose disguise. Geese ignore a disguised player.
+     */
+    private boolean isDisguised = false;
+
+    /**
+     * Turns the player's disguise on or off.
+     *
+     * @param disguised true to put the disguise on, false to take it off
+     */
+    public void setDisguised(boolean disguised) {
+        this.isDisguised = disguised;
+    }
+
+    /**
+     * Checks whether the player is currently disguised.
+     *
+     * @return true if the player is disguised
+     */
+    public boolean getDisguised() {
+        return this.isDisguised;
+    }
+
+    //Changing sprite behavior
+    /**
+     * Fetch the texture currently used to draw the player.
+     *
+     * @return The player's current sprite.
+     */
+    public Texture getSprite(){
+        return this.sprite;
+    }
+
+    /**
+     * Changes the texture used to draw the player.
+     *
+     * @param sprite The texture to draw the player with.
+     */
+    public void setSprite(Texture sprite) {
+        this.sprite = sprite;
+    }
+
+    /**
+     * Getter to displayer current player velocity
+     * @return Current velocity
+     */
+    public float getVel(){
+        return this.vel;
+    }
+
+    /**
+     * Setter to change player velocity when the player is disguised
+     * @param vel Velocity to set
+     */
+    public void setVel(float vel) {
+        this.vel = vel;
+    }
+
+    // Food (health)
+    /** Maximum amount of Yorkshire pudding the player can hold. */
+    private static final int MAX_FOOD = 100;
+
+    /** Seconds the player is safe from further bites after a goose takes some food. */
+    private static final float BITE_COOLDOWN = 1f;
+
+    private int food = MAX_FOOD;
+    private float biteCooldownLeft = 0f;
+
+    /**
+     * Counts down the bite cooldown. Call once per frame.
+     *
+     * @param delta Time in seconds since the last frame.
+     */
+    public void updateFoodTimer(float delta) {
+        if (this.biteCooldownLeft > 0) {
+            this.biteCooldownLeft -= delta;
+        }
+    }
+
+    /**
+     * A goose takes some of the player's food. Ignored during the bite cooldown.
+     *
+     * @param amount How much food is taken.
+     * @return true if food was actually lost.
+     */
+    public boolean loseFood(int amount) {
+        if (this.biteCooldownLeft > 0 || this.food <= 0) {
+            return false;
+        }
+        this.food = Math.max(0, this.food - amount);
+        this.biteCooldownLeft = BITE_COOLDOWN;
+        return true;
+    }
+
+    /** @return food remaining as a fraction between 0 and 1, for drawing the bar. */
+    public float getFoodFraction() {
+        return (float) this.food / MAX_FOOD;
+    }
+
+    /** @return true if all the food has been eaten (the game-over condition). */
+    public boolean isOutOfFood() {
+        return this.food <= 0;
+    }
+
 }

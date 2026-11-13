@@ -9,20 +9,26 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import uk.ac.york.eng1.geese.entities.GoalZone;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import uk.ac.york.eng1.geese.entities.NPC.Fox;
 import uk.ac.york.eng1.geese.entities.NPC.Goose;
+import uk.ac.york.eng1.geese.entities.NPC.LongBoi;
+import uk.ac.york.eng1.geese.entities.NPC.Status;
 import uk.ac.york.eng1.geese.entities.Player;
-
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.MapProperties;
+import uk.ac.york.eng1.geese.items.Airhorn;
+import uk.ac.york.eng1.geese.items.Goosedisguise;
+import uk.ac.york.eng1.geese.ui.Hud;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
@@ -46,7 +52,12 @@ public class Main extends ApplicationAdapter {
     private Player player;
     private Goose goose1;
     private Goose goose2;
-    private Goose[] gooseArray;
+    private LongBoi longBoi;
+    // initially set to false, set to true when 2 minutes have passed
+    private boolean long_boi_spawned = false;
+    private Fox fox;
+    // initially set to false, set to true when the timer reaches 2 minutes 45 seconds have passed
+    private boolean fox_spawned = false;
 
     private GoalZone startPoint;
     private GoalZone goalPoint;
@@ -57,9 +68,15 @@ public class Main extends ApplicationAdapter {
     private Viewport viewport;
 
     private GameMap gameMap;
+
     private BitmapFont timerFont;
     private GlyphLayout timerLayout;
     private float timer;
+
+    private Hud hud;
+    /** Food a goose takes per bite. */
+    private static final int BITE_AMOUNT = 10;
+
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -96,10 +113,16 @@ public class Main extends ApplicationAdapter {
             gameMap
         );
 
+        hud = new Hud();
+
+        player.getInventory().addItem(new Airhorn(new Texture("Airhorn.png"),
+            Gdx.audio.newSound(Gdx.files.internal("AirhornSound.wav"))));
+        player.getInventory().addItem(new Goosedisguise(new Texture("Goosedisguise.png")));
+
         goose1 = new Goose(
             300,
             300,
-            2,
+            3,
             300,
             gameMap
         );
@@ -107,13 +130,16 @@ public class Main extends ApplicationAdapter {
         goose2 = new Goose(
             400,
             400,
-            2,
+            3,
             300,
             gameMap
         );
 
+
+
         // This should be defined by the goose spawning method
-        gooseArray = new Goose[]{goose1, goose2};
+        gameMap.addGoose(goose1);
+        gameMap.addGoose(goose2);
 
         // Ensure the viewport is correctly sized to the window
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
@@ -131,18 +157,74 @@ public class Main extends ApplicationAdapter {
     public void render() {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
+        // ---spawn logic begins---
+        if (!long_boi_spawned && timer <= 180f){
+            // spawns longboi related to the players position
+            Vector2 spawnPos = player.getPos().cpy().add(300,300);
+            longBoi = new LongBoi(
+                spawnPos.x,
+                spawnPos.y,
+                3,
+                500,
+                gameMap
+            );
+            long_boi_spawned = true;
+            System.out.println("Long Boi has spawned!");
+        }
+
+        if  (!fox_spawned && timer <= 135f) {
+            // spawns fox related to the players position
+            Vector2 spawnPos = player.getPos().cpy().add(300, 300);
+            fox = new Fox(
+                spawnPos.x,
+                spawnPos.y,
+                2,
+                500,
+                gameMap
+            );
+            fox_spawned = true;
+            System.out.println("fox has spawned!");
+        }
+        // ---spawn logic ends---
+
         // Load map and set up camera
         camera.position.set(player.getPos(), 0);
         camera.update();
         gameMap.setViewAndRender(camera);
         batch.setProjectionMatrix(camera.combined);
 
-        // Check for collision between entities -> this is very inefficient.
-        for (Goose goose : gooseArray){
-            if(player.getHitbox().overlaps(goose.getHitbox())){
-                System.out.println("goose hit player");
+        // food timer
+        player.updateFoodTimer(Gdx.graphics.getDeltaTime());
+
+        for (Goose goose : gameMap.getGeese()) {
+            // Geese can't bite a disguised player and when Scared, matching how they ignore them when targeting
+            if (!player.getDisguised() && goose.getStatus() != Status.SCARED && player.getHitbox().overlaps(goose.getHitbox())) {
+                player.loseFood(BITE_AMOUNT);
             }
         }
+        if (longBoi != null) {
+            if (player.getHitbox().overlaps(longBoi.getHitbox())) {
+                System.out.println("long boi hit player");
+            }
+
+            if (fox != null && longBoi.getHitbox().overlaps(fox.getHitbox())) {
+                System.out.println("fox hit longBoi");
+            }
+        }
+
+
+        // Use items
+        // gameMap is now passed because Inventory.useItem needs it for the item's effect
+        if (Gdx.input.isKeyJustPressed(Input .Keys.E)) {
+            player.getInventory().useItem(Airhorn.class, gameMap, player);
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) {
+            player.getInventory().useItem(Goosedisguise.class, gameMap, player);
+        }
+
+        // Tick timed item effects once per frame
+        // Fixed: gameMap and player are now passed because items need them to end their effects
+        player.getInventory().update(Gdx.graphics.getDeltaTime(), gameMap, player);
 
         //----------batch begins----------
         batch.begin();
@@ -151,15 +233,27 @@ public class Main extends ApplicationAdapter {
         // Draw the start and goal markers beneath the entities so the player is always visible.
         startPoint.draw(batch, pixel, timerFont, markerLayout);
         goalPoint.draw(batch, pixel, timerFont, markerLayout);
-
-        for (Goose goose : gooseArray) {
+        for (Goose goose : gameMap.getGeese()) {
             goose.updateStatus(player);
             goose.moveNPC();
             goose.draw(batch);
         }
 
+        if (longBoi != null) {
+            longBoi.updateStatus(player);
+            longBoi.moveNPC();
+            longBoi.draw(batch);
+        }
+
+        if (fox != null) {
+            fox.updateStatus(fox.findClosestTarget(gameMap.getGeese(), longBoi != null ? longBoi : player));
+            fox.moveNPC();
+            fox.draw(batch);
+        }
+
         player.draw(batch);
         batch.end();
+        hud.draw(batch, viewport, player);
         //----------batch ends----------
 
         // Check whether the player has reached B. The timer stops once the goal is reached.
@@ -185,7 +279,9 @@ public class Main extends ApplicationAdapter {
         // of the window regardless of where the camera is.
         batch.getProjectionMatrix().setToOrtho2D(0, 0,
             Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+      
         batch.begin();
+      
         float padding = 20f;
         timerFont.draw(batch, timeText,
             Gdx.graphics.getWidth() - timerLayout.width - padding,
@@ -209,5 +305,7 @@ public class Main extends ApplicationAdapter {
         timerFont.dispose();
         pixel.dispose();
         gameMap.dispose();
+        player.getInventory().dispose();
+        hud.dispose();
     }
 }

@@ -8,6 +8,10 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import uk.ac.york.eng1.geese.entities.NPC.Goose;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class used for managing the map state including LibGDX Map and rendering objects, regions of interest,
@@ -28,6 +32,11 @@ public class GameMap {
     private TiledMap tileMap;
     private MapProperties mapProps;
     private OrthogonalTiledMapRenderer renderer;
+
+    /**
+     * All geese currently on the map. Lets items such as the Airhorn reach them through the GameMap.
+     */
+    private final List<Goose> geese = new ArrayList<>();
 
     /**
      * Creates a GameMap object using the txm object and LIBGDX's TiledMap class. Initialises the world
@@ -58,7 +67,7 @@ public class GameMap {
     /**
      * Update the renderer's view to the passed camera and then render the map.
      * Should be called once per frame in the Main render() loop.
-     * 
+     *
      * @param camera The camera representing the window viewport. Renders map to this camera view.
      */
     public void setViewAndRender(OrthographicCamera camera){
@@ -109,6 +118,21 @@ public class GameMap {
      */
     public float[] getTileSizeInWorld(){
         return new float[]{this.tileWidthInWorld, this.tileHeightInWorld};
+     * Adds a goose to the map so that it can be found through getGeese.
+     *
+     * @param goose The goose to add to the map.
+     */
+    public void addGoose(Goose goose){
+        this.geese.add(goose);
+    }
+
+    /**
+     * Fetch all geese currently on the map.
+     *
+     * @return A read-only copy of the list of geese. The Goose objects inside are the real ones, not copies.
+     */
+    public List<Goose> getGeese(){
+        return List.copyOf(this.geese);
     }
 
     /**
