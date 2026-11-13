@@ -116,18 +116,17 @@ public class Main extends ApplicationAdapter {
         // Fixed: gameMap and player are now passed because items need them to end their effects
         player.getInventory().update(Gdx.graphics.getDeltaTime(), gameMap, player);
 
+        // Uses a percentage chance to spawn a goose within the map
         if (RANDOM.nextDouble() < (Gdx.graphics.getDeltaTime() * GOOSE_SPAWN_CHANCE)) {
             double posX;
             double posY;
-            do {
-                double angle = RANDOM.nextDouble(2 * Math.PI);
-                double offsetX = SPAWN_RADIUS * Math.sin(angle);
-                double offsetY = SPAWN_RADIUS * Math.cos(angle);
+            double angle = RANDOM.nextDouble(2 * Math.PI);
+            double offsetX = SPAWN_RADIUS * Math.sin(angle);
+            double offsetY = SPAWN_RADIUS * Math.cos(angle);
 
-                posX = camera.position.x + offsetX;
-                posY = camera.position.y + offsetY;
-            } while (posX < gameMap.mapBoundLeft || posX > gameMap.mapBoundRight
-                || posY < gameMap.mapBoundFloor || posY > gameMap.mapBoundRoof);
+            posX = camera.position.x + offsetX;
+            posY = camera.position.y + offsetY;
+            
             var goose = new Goose(
                 (float) posX,
                 (float) posY,
