@@ -95,6 +95,7 @@ public class Goose extends AbstractNPC {
      */
     public void scare() {
         this.status = Status.SCARED;
+        this.vel = 50f;
     }
 
     /**

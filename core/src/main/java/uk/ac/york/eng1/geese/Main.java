@@ -31,6 +31,7 @@ import uk.ac.york.eng1.geese.items.Airhorn;
 import uk.ac.york.eng1.geese.items.Goosedisguise;
 import uk.ac.york.eng1.geese.ui.Hud;
 
+import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -77,7 +78,7 @@ public class Main extends ApplicationAdapter {
     private Hud hud;
     /** Food a goose takes per bite. */
     private static final int BITE_AMOUNT = 10;
-    private static final double GOOSE_SPAWN_CHANCE = 0.25;
+    private static final double GOOSE_SPAWN_CHANCE = 0.5f;
     private static final double SPAWN_RADIUS = 500;
     private static final Random RANDOM = new Random();
 
@@ -187,7 +188,7 @@ public class Main extends ApplicationAdapter {
         if (longBoi != null) {
             if (longBoi.getStatus() != Status.SCARED && player.getHitbox().overlaps(longBoi.getHitbox())) {
                 player.loseFood(BITE_AMOUNT);
-                System.out.println("long boi hit player");
+
             }
 
             if (fox != null && longBoi.getHitbox().overlaps(fox.getHitbox())) {
@@ -219,7 +220,7 @@ public class Main extends ApplicationAdapter {
 
             posX = camera.position.x + offsetX;
             posY = camera.position.y + offsetY;
-            
+
             var goose = new Goose(
                 (float) posX,
                 (float) posY,
@@ -237,10 +238,21 @@ public class Main extends ApplicationAdapter {
         // Draw the start and goal markers beneath the entities so the player is always visible.
         startPoint.draw(batch, pixel, timerFont, markerLayout);
         goalPoint.draw(batch, pixel, timerFont, markerLayout);
-        for (Goose goose : gameMap.getGeese()) {
-            goose.updateStatus(player);
-            goose.moveNPC();
-            goose.draw(batch);
+
+        Iterator<Goose> it = gameMap.getGeese().iterator();
+        while(it.hasNext()){
+            Goose goose = it.next();
+            if(goose.getStatus() == Status.SCARED && player.getPos().dst2(goose.getPos()) > 250000f){
+                System.out.println(player.getPos().dst2(goose.getPos()));
+                System.out.println(goose.getStatus() == Status.SCARED );
+                System.out.println(player.getPos().dst2(goose.getPos()) > 4000f);
+                goose.dispose();
+                it.remove();
+            } else{
+                goose.updateStatus(player);
+                goose.moveNPC();
+                goose.draw(batch);
+            }
         }
 
         if (longBoi != null) {
@@ -290,9 +302,9 @@ public class Main extends ApplicationAdapter {
         // of the window regardless of where the camera is.
         batch.getProjectionMatrix().setToOrtho2D(0, 0,
             Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-      
+
         batch.begin();
-      
+
         float padding = 20f;
         timerFont.draw(batch, timeText,
             Gdx.graphics.getWidth() - timerLayout.width - padding,
@@ -318,5 +330,9 @@ public class Main extends ApplicationAdapter {
         gameMap.dispose();
         player.getInventory().dispose();
         hud.dispose();
+
+        for (Goose goose: gameMap.getGeese()){
+            goose.dispose();
+        }
     }
 }
