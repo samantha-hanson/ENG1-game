@@ -116,7 +116,6 @@ public class Main extends ApplicationAdapter {
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new ExtendViewport(800, 600, camera);
-
         // A 1x1 white texture used to draw the coloured rectangles of the start and goal zones.
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.WHITE);
@@ -128,11 +127,11 @@ public class Main extends ApplicationAdapter {
         float unitScale = 5f;
         gameMap = new GameMap("mapdummy.tmx", unitScale);
         // Goal zone B: a 3x3 tile block in the top-right corner of the map
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.WHITE);
-        pixmap.fill();
-        zonePixel = new Texture(pixmap);
-        pixmap.dispose();
+        Pixmap pixmap1 = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap1.setColor(Color.WHITE);
+        pixmap1.fill();
+        zonePixel = new Texture(pixmap1);
+        pixmap1.dispose();
 
         zoneFont = new BitmapFont();
         zoneFont.getData().setScale(2f);
@@ -274,12 +273,11 @@ public class Main extends ApplicationAdapter {
 
         //----------batch begins----------
         batch.begin();
-        goalB.draw(batch, zonePixel, zoneFont, zoneLayout);
         player.movePlayer();
 
         // Draw the start and goal markers beneath the entities so the player is always visible.
-        startPoint.draw(batch, pixel, timerFont, markerLayout);
-        goalPoint.draw(batch, pixel, timerFont, markerLayout);
+        startPoint.draw(batch, pixel, timerFont, zoneLayout);
+        goalB.draw(batch, zonePixel, zoneFont, zoneLayout);
 
         Iterator<Goose> it = gameMap.getGeese().iterator();
         while(it.hasNext()){
@@ -320,22 +318,25 @@ public class Main extends ApplicationAdapter {
         batch.end();
         if (player.isOutOfFood()) {
             gameOver = true;
-            survived = false;
+            result = EndScreen.Result.LOST;
+        } else if (goalB.isOccupiedBy(player)) {
+            gameOver = true;
+            result = EndScreen.Result.REACHED_GOAL;
         } else if (timer <= 0f) {
             gameOver = true;
-            survived = true;
+            result = EndScreen.Result.SURVIVED;
         }
         hud.draw(batch, viewport, player);
         //----------batch ends----------
 
         // Check whether the player has reached B. The timer stops once the goal is reached.
-        if (!goalPoint.isReached() && goalPoint.isOccupiedBy(player)) {
-            goalPoint.setReached(true);
+        if (!goalB.isReached() && goalB.isOccupiedBy(player)) {
+            goalB.setReached(true);
             System.out.println("Player reached goal B");
         }
 
         //----------HUD: 5-minute countdown timer in the top-right corner----------
-        if (!goalPoint.isReached()) {
+        if (!goalB.isReached()) {
             timer -= Gdx.graphics.getDeltaTime();
             if (timer < 0f) {
                 timer = 0f;
@@ -359,7 +360,7 @@ public class Main extends ApplicationAdapter {
             Gdx.graphics.getWidth() - timerLayout.width - padding,
             Gdx.graphics.getHeight() - padding);
 
-        if (goalPoint.isReached()) {
+        if (goalB.isReached()) {
             String goalText = "Goal B reached!";
             markerLayout.setText(timerFont, goalText);
             timerFont.draw(batch, markerLayout,
@@ -388,7 +389,7 @@ public class Main extends ApplicationAdapter {
         batch.end();
 
         hud.draw(batch, viewport, player);
-        endScreen.draw(batch, viewport, survived, TOTAL_TIME - timer);
+        endScreen.draw(batch, viewport, result, TOTAL_TIME - timer);
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
             restart();
@@ -413,6 +414,8 @@ public class Main extends ApplicationAdapter {
         player.getInventory().dispose();
         hud.dispose();
         endScreen.dispose();
+        zonePixel.dispose();
+        zoneFont.dispose();
 
         for (Goose goose: gameMap.getGeese()){
             goose.dispose();
