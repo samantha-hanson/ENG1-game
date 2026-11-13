@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import uk.ac.york.eng1.geese.entities.GoalZone;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import uk.ac.york.eng1.geese.entities.AbstractEntity;
 import uk.ac.york.eng1.geese.entities.NPC.Fox;
 import uk.ac.york.eng1.geese.entities.NPC.Goose;
 import uk.ac.york.eng1.geese.entities.NPC.LongBoi;
@@ -158,7 +159,7 @@ public class Main extends ApplicationAdapter {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
         // ---spawn logic begins---
-        if (!long_boi_spawned && timer <= 180f){
+        if (!long_boi_spawned && timer <= 290f){
             // spawns longboi related to the players position
             Vector2 spawnPos = player.getPos().cpy().add(300,300);
             longBoi = new LongBoi(
@@ -172,7 +173,7 @@ public class Main extends ApplicationAdapter {
             System.out.println("Long Boi has spawned!");
         }
 
-        if  (!fox_spawned && timer <= 135f) {
+        if  (!fox_spawned && timer <= 280f) {
             // spawns fox related to the players position
             Vector2 spawnPos = player.getPos().cpy().add(300, 300);
             fox = new Fox(
@@ -203,7 +204,8 @@ public class Main extends ApplicationAdapter {
             }
         }
         if (longBoi != null) {
-            if (player.getHitbox().overlaps(longBoi.getHitbox())) {
+            if (longBoi.getStatus() != Status.SCARED && player.getHitbox().overlaps(longBoi.getHitbox())) {
+                player.loseFood(BITE_AMOUNT);
                 System.out.println("long boi hit player");
             }
 
@@ -246,7 +248,14 @@ public class Main extends ApplicationAdapter {
         }
 
         if (fox != null) {
-            fox.updateStatus(fox.findClosestTarget(gameMap.getGeese(), longBoi != null ? longBoi : player));
+            AbstractEntity target = fox.findClosestTarget(gameMap.getGeese(), longBoi != null ? longBoi : player);
+            if (target instanceof LongBoi){
+                longBoi.scare();
+            }
+            else{
+                longBoi.calm();
+            }
+            fox.updateStatus(target);
             fox.moveNPC();
             fox.draw(batch);
         }
