@@ -30,6 +30,7 @@ import uk.ac.york.eng1.geese.entities.Player;
 import uk.ac.york.eng1.geese.items.Airhorn;
 import uk.ac.york.eng1.geese.items.Goosedisguise;
 import uk.ac.york.eng1.geese.ui.Hud;
+import uk.ac.york.eng1.geese.ui.EndScreen;
 
 import java.util.Iterator;
 import java.util.Random;
@@ -75,6 +76,9 @@ public class Main extends ApplicationAdapter {
     private GlyphLayout timerLayout;
     private float timer;
 
+    private EndScreen endScreen;
+    private boolean gameOver = false;
+
     private Hud hud;
     /** Food a goose takes per bite. */
     private static final int BITE_AMOUNT = 10;
@@ -90,6 +94,12 @@ public class Main extends ApplicationAdapter {
     // Runs once on start-up
     @Override
     public void create() {
+        longBoi = null;
+        fox = null;
+        long_boi_spawned = false;
+        fox_spawned = false;
+        gameOver = false;
+
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new ExtendViewport(800, 600, camera);
@@ -119,6 +129,7 @@ public class Main extends ApplicationAdapter {
         );
 
         hud = new Hud();
+        endScreen = new EndScreen();
 
         player.getInventory().addItem(new Airhorn(new Texture("Airhorn.png"),
             Gdx.audio.newSound(Gdx.files.internal("AirhornSound.wav"))));
@@ -139,6 +150,10 @@ public class Main extends ApplicationAdapter {
     @Override
     public void render() {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+        if (gameOver) {
+            renderGameOver();
+            return;
+        }
 
         // ---spawn logic begins---
         if (!long_boi_spawned && timer <= 290f){
@@ -276,6 +291,9 @@ public class Main extends ApplicationAdapter {
 
         player.draw(batch);
         batch.end();
+        if (player.isOutOfFood()) {
+            gameOver = true;
+        }
         hud.draw(batch, viewport, player);
         //----------batch ends----------
 
@@ -321,6 +339,39 @@ public class Main extends ApplicationAdapter {
         //----------HUD ends----------
     }
 
+    /** Draws the frozen world with the end screen on top, and listens for restart/quit. */
+    private void renderGameOver() {
+        camera.position.set(player.getPos(), 0);
+        camera.update();
+        gameMap.setViewAndRender(camera);
+        batch.setProjectionMatrix(camera.combined);
+
+        // Draw entities without updating them, so everything stays frozen
+        batch.begin();
+        for (Goose goose : gameMap.getGeese()) {
+            goose.draw(batch);
+        }
+        if (longBoi != null) longBoi.draw(batch);
+        if (fox != null) fox.draw(batch);
+        player.draw(batch);
+        batch.end();
+
+        hud.draw(batch, viewport, player);
+        endScreen.draw(batch, viewport, TOTAL_TIME - timer);
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+            restart();
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            Gdx.app.exit();
+        }
+    }
+
+    /** Frees everything and starts a fresh game. */
+    private void restart() {
+        dispose();
+        create();
+    }
+
     // Runs once at the end of the program
     @Override
     public void dispose() {
@@ -330,6 +381,7 @@ public class Main extends ApplicationAdapter {
         gameMap.dispose();
         player.getInventory().dispose();
         hud.dispose();
+        endScreen.dispose();
 
         for (Goose goose: gameMap.getGeese()){
             goose.dispose();
