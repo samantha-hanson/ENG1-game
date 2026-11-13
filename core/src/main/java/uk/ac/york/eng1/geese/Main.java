@@ -119,7 +119,7 @@ public class Main extends ApplicationAdapter {
 
         // load the map, and constrict entity movement
         float unitScale = 5f;
-        gameMap = new GameMap("mapdummy.tmx", unitScale);
+        gameMap = new GameMap("park.tmx", unitScale);
 
         // The player starts at A, in the centre of the bottom-left tile, and has to reach B.
         startPoint = new GoalZone(gameMap.getTileBounds(START_TILE_X, START_TILE_Y, 1, 1),
@@ -219,7 +219,7 @@ public class Main extends ApplicationAdapter {
             }
         }
         if (longBoi != null) {
-            if (longBoi.getStatus() != Status.SCARED && player.getHitbox().overlaps(longBoi.getHitbox())) {
+            if (longBoi.getStatus() != Status.SCARED && !player.getDisguised() && player.getHitbox().overlaps(longBoi.getHitbox())) {
                 player.loseFood(BITE_AMOUNT);
 
             }
