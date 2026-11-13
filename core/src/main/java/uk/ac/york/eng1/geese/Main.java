@@ -165,7 +165,8 @@ public class Main extends ApplicationAdapter {
             }
         }
         if (longBoi != null) {
-            if (player.getHitbox().overlaps(longBoi.getHitbox())) {
+            if (longBoi.getStatus() != Status.SCARED && player.getHitbox().overlaps(longBoi.getHitbox())) {
+                player.loseFood(BITE_AMOUNT);
                 System.out.println("long boi hit player");
             }
 

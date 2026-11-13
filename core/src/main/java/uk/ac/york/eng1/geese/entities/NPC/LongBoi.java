@@ -76,4 +76,30 @@ public class LongBoi extends AbstractNPC{
             }
         }
     }
+
+    /**
+     * Makes long boi flee from the player until calm is called.
+     */
+    public void scare() {
+        this.status = Status.SCARED;
+    }
+
+    /**
+     * Returns a scared long boi to idle. If long boi isn't scared it's left alone.
+     */
+    public void calm() {
+        if (this.status == Status.SCARED) {
+            this.status = Status.IDLE;
+        }
+    }
+
+    /**
+     * Displaying the status of long boi object
+     * @return Current Status of long boi
+     */
+    public Status getStatus(){
+        return this.status;
+    }
 }
+
+
