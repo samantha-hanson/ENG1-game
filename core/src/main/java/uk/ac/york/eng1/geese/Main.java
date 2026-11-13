@@ -18,6 +18,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import uk.ac.york.eng1.geese.entities.GoalZone;
+
 import uk.ac.york.eng1.geese.entities.GoalZone;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -78,6 +82,14 @@ public class Main extends ApplicationAdapter {
 
     private EndScreen endScreen;
     private boolean gameOver = false;
+    /** How the game ended; null while the game is still running. */
+    private EndScreen.Result result;
+
+    /** The zone the player has to reach to win, plus what's needed to draw it. */
+    private GoalZone goalB;
+    private Texture zonePixel;
+    private BitmapFont zoneFont;
+    private GlyphLayout zoneLayout;
 
     private Hud hud;
     /** Food a goose takes per bite. */
@@ -99,6 +111,7 @@ public class Main extends ApplicationAdapter {
         long_boi_spawned = false;
         fox_spawned = false;
         gameOver = false;
+        result = null;
 
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
@@ -114,6 +127,19 @@ public class Main extends ApplicationAdapter {
         // load the map, and constrict entity movement
         float unitScale = 5f;
         gameMap = new GameMap("mapdummy.tmx", unitScale);
+        // Goal zone B: a 3x3 tile block in the top-right corner of the map
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.WHITE);
+        pixmap.fill();
+        zonePixel = new Texture(pixmap);
+        pixmap.dispose();
+
+        zoneFont = new BitmapFont();
+        zoneFont.getData().setScale(2f);
+        zoneLayout = new GlyphLayout();
+
+        int[] mapSize = gameMap.getSizeInTiles();
+        goalB = new GoalZone(gameMap.getTileBounds(mapSize[0] - 4, 1, 3, 3), "B", Color.GREEN);
 
         // The player starts at A, in the centre of the bottom-left tile, and has to reach B.
         startPoint = new GoalZone(gameMap.getTileBounds(START_TILE_X, START_TILE_Y, 1, 1),
@@ -248,6 +274,7 @@ public class Main extends ApplicationAdapter {
 
         //----------batch begins----------
         batch.begin();
+        goalB.draw(batch, zonePixel, zoneFont, zoneLayout);
         player.movePlayer();
 
         // Draw the start and goal markers beneath the entities so the player is always visible.
@@ -293,6 +320,10 @@ public class Main extends ApplicationAdapter {
         batch.end();
         if (player.isOutOfFood()) {
             gameOver = true;
+            survived = false;
+        } else if (timer <= 0f) {
+            gameOver = true;
+            survived = true;
         }
         hud.draw(batch, viewport, player);
         //----------batch ends----------
@@ -357,7 +388,7 @@ public class Main extends ApplicationAdapter {
         batch.end();
 
         hud.draw(batch, viewport, player);
-        endScreen.draw(batch, viewport, TOTAL_TIME - timer);
+        endScreen.draw(batch, viewport, survived, TOTAL_TIME - timer);
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
             restart();
