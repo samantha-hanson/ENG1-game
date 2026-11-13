@@ -3,7 +3,6 @@ package uk.ac.york.eng1.geese.items;
 import com.badlogic.gdx.graphics.Texture;
 import uk.ac.york.eng1.geese.GameMap;
 import uk.ac.york.eng1.geese.entities.Player;
-import uk.ac.york.eng1.geese.stats.GameStats;
 
 /**
  * Represents the standard for defining future items
