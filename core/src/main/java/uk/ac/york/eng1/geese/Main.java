@@ -78,7 +78,7 @@ public class Main extends ApplicationAdapter {
     private Hud hud;
     /** Food a goose takes per bite. */
     private static final int BITE_AMOUNT = 10;
-    private static final double GOOSE_SPAWN_CHANCE = 0.25;
+    private static final double GOOSE_SPAWN_CHANCE = 0.5f;
     private static final double SPAWN_RADIUS = 500;
     private static final Random RANDOM = new Random();
 
@@ -188,7 +188,7 @@ public class Main extends ApplicationAdapter {
         if (longBoi != null) {
             if (longBoi.getStatus() != Status.SCARED && player.getHitbox().overlaps(longBoi.getHitbox())) {
                 player.loseFood(BITE_AMOUNT);
-                System.out.println("long boi hit player");
+
             }
 
             if (fox != null && longBoi.getHitbox().overlaps(fox.getHitbox())) {
@@ -242,8 +242,10 @@ public class Main extends ApplicationAdapter {
         Iterator<Goose> it = gameMap.getGeese().iterator();
         while(it.hasNext()){
             Goose goose = it.next();
-            if(goose.getStatus() == Status.SCARED && player.getPos().dst2(goose.getPos()) > 400f){
-                System.out.println(gameMap.getGeese());
+            if(goose.getStatus() == Status.SCARED && player.getPos().dst2(goose.getPos()) > 250000f){
+                System.out.println(player.getPos().dst2(goose.getPos()));
+                System.out.println(goose.getStatus() == Status.SCARED );
+                System.out.println(player.getPos().dst2(goose.getPos()) > 4000f);
                 goose.dispose();
                 it.remove();
             } else{
@@ -328,5 +330,7 @@ public class Main extends ApplicationAdapter {
         gameMap.dispose();
         player.getInventory().dispose();
         hud.dispose();
+
+        
     }
 }

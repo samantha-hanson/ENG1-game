@@ -70,4 +70,8 @@ public abstract class AbstractEntity {
     public void dispose(){
         this.sprite.dispose();
     }
+
+    public void setVel(float vel){
+        this.vel = vel;
+    }
 }
