@@ -67,6 +67,9 @@ public abstract class AbstractEntity {
      */
     public Rectangle getHitbox(){ return this.hitbox; }
 
+    /**
+     * Disposes all necessary libGDX objects.
+     */
     public void dispose(){
         this.sprite.dispose();
     }

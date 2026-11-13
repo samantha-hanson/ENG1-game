@@ -331,6 +331,8 @@ public class Main extends ApplicationAdapter {
         player.getInventory().dispose();
         hud.dispose();
 
-        
+        for (Goose goose: gameMap.getGeese()){
+            goose.dispose();
+        }
     }
 }
