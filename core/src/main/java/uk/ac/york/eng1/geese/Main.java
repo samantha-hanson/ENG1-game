@@ -151,7 +151,7 @@ public class Main extends ApplicationAdapter {
         // The player starts at A, in the centre of the bottom-left tile, and has to reach B.
         startPoint = new GoalZone(gameMap.getTileBounds(START_TILE_X, START_TILE_Y, 1, 1),
             "A", Color.SKY);
-        if(gooseDisposeCounter >= 50) {
+        if(gooseDisposeCounter >= 2) {
             goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
                 "B", Color.MAGENTA);
         }
@@ -298,8 +298,16 @@ public class Main extends ApplicationAdapter {
         player.movePlayer();
         // Draw the start and goal markers beneath the entities so the player is always visible.
         startPoint.draw(batch, pixel, timerFont, markerLayout);
-<<<<<<< HEAD
 
+        // Define goalPoint once score is reached -> DO NOT REINITIALISE
+        if(gooseDisposeCounter >= 2 && goalPoint == null) {
+            goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
+                "B", Color.MAGENTA);
+        }
+
+        if (goalPoint != null) {
+            goalPoint.draw(batch, pixel, timerFont, markerLayout);
+        }
 
         if(foxPoint != null){
             foxPoint.draw(batch, pixel, timerFont, markerLayout);
@@ -340,6 +348,23 @@ public class Main extends ApplicationAdapter {
         player.draw(batch);
         batch.end();
 
+        // Check whether the player has reached B. The timer stops once the goal is reached.
+        if (goalPoint!= null && !goalPoint.isReached() && goalPoint.isOccupiedBy(player)) {
+            goalPoint.setReached(true);
+            System.out.println("Player reached goal B");
+        }
+
+        //----------HUD: 5-minute countdown timer in the top-right corner----------
+        timer -= Gdx.graphics.getDeltaTime();
+        if (goalPoint != null && goalPoint.isReached()) {
+            endScreen.draw(batch, viewport, EndScreen.Result.REACHED_GOAL, TOTAL_TIME - timer);
+        }
+        if (goalPoint != null && !goalPoint.isReached()) {
+            timer -= Gdx.graphics.getDeltaTime();
+            if (timer < 0f) {
+                timer = 0f;
+            }
+        }
 
         int minutes = (int) (timer / 60);
         int seconds = (int) (timer % 60);
