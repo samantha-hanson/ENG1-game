@@ -2,39 +2,35 @@ package uk.ac.york.eng1.geese;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import uk.ac.york.eng1.geese.entities.Player;
 import uk.ac.york.eng1.geese.entities.GoalZone;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import uk.ac.york.eng1.geese.entities.AbstractEntity;
 import uk.ac.york.eng1.geese.entities.NPC.Fox;
 import uk.ac.york.eng1.geese.entities.NPC.Goose;
 import uk.ac.york.eng1.geese.entities.NPC.LongBoi;
 import uk.ac.york.eng1.geese.entities.NPC.Status;
-import uk.ac.york.eng1.geese.entities.Player;
+
 import uk.ac.york.eng1.geese.items.Airhorn;
 import uk.ac.york.eng1.geese.items.Goosedisguise;
+
 import uk.ac.york.eng1.geese.ui.Hud;
 import uk.ac.york.eng1.geese.ui.EndScreen;
-
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import uk.ac.york.eng1.geese.entities.GoalZone;
 
 import java.util.Iterator;
 import java.util.Random;
@@ -49,23 +45,18 @@ public class Main extends ApplicationAdapter {
     private static final int START_TILE_X = 0;
     private static final int START_TILE_Y = 19;
 
+    // Fox den spawn location
     private static final int FOX_TILE_X = 8;
     private static final int FOX_TILE_Y = 8;
-
-
-    // Goal point B: the top-most yellow rectangle in the top-right corner of the map,
-    // which covers tiles (21, 1) and (21, 2) in Tiled coordinates.
-    private static final int GOAL_TILE_X = 21;
-    private static final int GOAL_TILE_Y = 1;
-    private static final int GOAL_TILES_WIDE = 1;
-    private static final int GOAL_TILES_TALL = 2;
 
     private SpriteBatch batch;
 
     private Player player;
+
     private LongBoi longBoi;
     // initially set to false, set to true when 2 minutes have passed
     private boolean long_boi_spawned = false;
+    
     private Fox fox;
     // initially set to false, set to true when the timer reaches 2 minutes 45 seconds have passed
     private boolean fox_spawned = false;
