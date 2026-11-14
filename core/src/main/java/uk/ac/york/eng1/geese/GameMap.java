@@ -1,6 +1,10 @@
 package uk.ac.york.eng1.geese;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -8,21 +12,24 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import org.w3c.dom.Text;
+import uk.ac.york.eng1.geese.entities.GoalZone;
 import uk.ac.york.eng1.geese.entities.NPC.Goose;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Class used for managing the map state including LibGDX Map and rendering objects, regions of interest,
  * and entity movement boundaries.
  */
 public class GameMap {
+    private static final Random RANDOM = new Random();
 
-    final public float mapBoundLeft;
-    final public float mapBoundRight;
-    final public float mapBoundRoof;
-    final public float mapBoundFloor;
+    final private float mapBoundLeft;
+    final private float mapBoundRight;
+    final private float mapBoundRoof;
+    final private float mapBoundFloor;
 
     final private int mapWidthInTiles;
     final private int mapHeightInTiles;
@@ -33,10 +40,15 @@ public class GameMap {
     private MapProperties mapProps;
     private OrthogonalTiledMapRenderer renderer;
 
-    /**
-     * All geese currently on the map. Lets items such as the Airhorn reach them through the GameMap.
-     */
-    private List<Goose> geese = new ArrayList<>();
+    // variables for spawning geese and managing geese
+    private static final double SPAWN_RADIUS = 500;
+    /** All geese currently on the map. Lets items such as the Airhorn reach them through the GameMap. */
+    private final List<Goose> geese = new ArrayList<>();
+
+    // variables for managing zones of interest
+    private final Map<String, GoalZone> zones = new HashMap<String, GoalZone>(); // Store based on label
+    public GoalZone startZone;
+    public GoalZone endZone;
 
     /**
      * Creates a GameMap object using the txm object and LIBGDX's TiledMap class. Initialises the world
@@ -130,12 +142,94 @@ public class GameMap {
     }
 
     /**
+     * uses random and angles to produce a random distance from the player at which the goose is spawned
+     * and added to stored entities.
+     *
+     * @param origin the center point around which a goose is spawned
+     */
+    public void spawnGoose(Vector2 origin){
+        double angle = RANDOM.nextDouble(2 * Math.PI);
+        double offsetX = SPAWN_RADIUS * Math.sin(angle);
+        double offsetY = SPAWN_RADIUS * Math.cos(angle);
+
+        float posX = (float) (origin.x + offsetX);
+        float posY = (float) (origin.y + offsetY);
+
+        this.addGoose(
+            new Goose(posX, posY, 5, 300, this)
+        );
+    }
+
+    /**
+     * uses random and angles to produce a random distance from the player at which the goose is spawned
+     * and added to stored entities.
+     *
+     * @param origin the center point around which a goose is spawned
+     */
+    public void spawnGoose(Vector3 origin){
+        double angle = RANDOM.nextDouble(2 * Math.PI);
+        double offsetX = SPAWN_RADIUS * Math.sin(angle);
+        double offsetY = SPAWN_RADIUS * Math.cos(angle);
+
+        this.addGoose(new Goose(
+            (float) (origin.x + offsetX),
+            (float) (origin.y + offsetY),
+            2,
+            300,
+            this)
+        );
+    }
+
+    /**
      * Fetch all geese currently on the map.
      *
      * @return A read-only copy of the list of geese. The Goose objects inside are the real ones, not copies.
      */
     public List<Goose> getGeese(){
         return this.geese;
+    }
+
+    // ====================zone methods ====================
+
+    public void drawZones(SpriteBatch batch, Texture pixel, BitmapFont font, GlyphLayout layout){
+        if(this.startZone.isDrawable){
+            this.startZone.draw(batch, pixel, font, layout);
+        }
+        if(this.endZone.isDrawable){
+            this.endZone.draw(batch, pixel, font, layout);
+        }
+
+        for(Map.Entry<String, GoalZone> entry : this.zones.entrySet()){
+            GoalZone zone = entry.getValue();
+            if(zone.isDrawable){
+                zone.draw(batch, pixel, font, layout);
+            }
+        }
+    }
+
+    /**
+     * Adds GoalZone zone to the hashmap, using label as the key.
+     * @param zone GoalZone to be added to stored regions.
+     */
+    public void addZone(GoalZone zone){
+        this.zones.put(zone.getLabel(), zone);
+    }
+
+    /**
+     * fetches zone from the zones hashmap.
+     * @param label String key used to fetch the zone
+     * @return GoalZone fetched by map, null if key not found.
+     */
+    public GoalZone getZone(String label){
+        return this.zones.get(label);
+    }
+
+    /**
+     * removes GoalZone stored by label from zones hashmap.
+     * @param label String key used to remove zone from hashmap.
+     */
+    public void removeZone(String label){
+        this.zones.remove(label);
     }
 
     /**

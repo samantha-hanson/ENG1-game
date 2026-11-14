@@ -2,39 +2,35 @@ package uk.ac.york.eng1.geese;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import uk.ac.york.eng1.geese.entities.Player;
 import uk.ac.york.eng1.geese.entities.GoalZone;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import uk.ac.york.eng1.geese.entities.AbstractEntity;
 import uk.ac.york.eng1.geese.entities.NPC.Fox;
 import uk.ac.york.eng1.geese.entities.NPC.Goose;
 import uk.ac.york.eng1.geese.entities.NPC.LongBoi;
 import uk.ac.york.eng1.geese.entities.NPC.Status;
-import uk.ac.york.eng1.geese.entities.Player;
+
 import uk.ac.york.eng1.geese.items.Airhorn;
 import uk.ac.york.eng1.geese.items.Goosedisguise;
+
 import uk.ac.york.eng1.geese.ui.Hud;
 import uk.ac.york.eng1.geese.ui.EndScreen;
-
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import uk.ac.york.eng1.geese.entities.GoalZone;
 
 import java.util.Iterator;
 import java.util.Random;
@@ -49,30 +45,22 @@ public class Main extends ApplicationAdapter {
     private static final int START_TILE_X = 0;
     private static final int START_TILE_Y = 19;
 
+    // Fox den spawn location
     private static final int FOX_TILE_X = 8;
     private static final int FOX_TILE_Y = 8;
-
-
-    // Goal point B: the top-most yellow rectangle in the top-right corner of the map,
-    // which covers tiles (21, 1) and (21, 2) in Tiled coordinates.
-    private static final int GOAL_TILE_X = 21;
-    private static final int GOAL_TILE_Y = 1;
-    private static final int GOAL_TILES_WIDE = 1;
-    private static final int GOAL_TILES_TALL = 2;
 
     private SpriteBatch batch;
 
     private Player player;
+
     private LongBoi longBoi;
     // initially set to false, set to true when 2 minutes have passed
     private boolean long_boi_spawned = false;
+
     private Fox fox;
     // initially set to false, set to true when the timer reaches 2 minutes 45 seconds have passed
     private boolean fox_spawned = false;
 
-    private GoalZone startPoint;
-    private GoalZone goalPoint;
-    private GoalZone foxPoint;
     private Texture pixel;
     private GlyphLayout markerLayout;
 
@@ -83,6 +71,7 @@ public class Main extends ApplicationAdapter {
 
     private BitmapFont timerFont;
     private GlyphLayout timerLayout;
+    private GlyphLayout gooseDisposalLayout;
     private float timer;
 
     private EndScreen endScreen;
@@ -91,8 +80,8 @@ public class Main extends ApplicationAdapter {
     private Hud hud;
     /** Food a goose takes per bite. */
     private static final int BITE_AMOUNT = 10;
-    private static final double GOOSE_SPAWN_CHANCE = 0.5f;
-    private static final double SPAWN_RADIUS = 500;
+    private static final double GOOSE_SPAWN_CHANCE = 1f;
+
     private static final Random RANDOM = new Random();
 
     /** How the game ended; null while the game is still running. */
@@ -104,6 +93,11 @@ public class Main extends ApplicationAdapter {
     private GlyphLayout zoneLayout;
 
     private int gooseDisposeCounter = 0;
+
+    // Variables for ending the game
+    private float minDisposeCount = 50f;
+    private  boolean endConditionsMet = false;
+
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -145,21 +139,15 @@ public class Main extends ApplicationAdapter {
         zoneFont.getData().setScale(2f);
         zoneLayout = new GlyphLayout();
 
-        int[] mapSize = gameMap.getSizeInTiles();
-        goalPoint = new GoalZone(gameMap.getTileBounds(mapSize[0] - 4, 1, 3, 3), "B", Color.GREEN);
+        gameMap.endZone = new GoalZone(gameMap.getTileBounds(0, 0, 3, 3), "END ZONE", Color.GREEN, false);
 
         // The player starts at A, in the centre of the bottom-left tile, and has to reach B.
-        startPoint = new GoalZone(gameMap.getTileBounds(START_TILE_X, START_TILE_Y, 1, 1),
-            "A", Color.SKY);
-        if(gooseDisposeCounter >= 2) {
-            goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
-                "B", Color.MAGENTA);
-        }
-
+        gameMap.startZone = new GoalZone(gameMap.getTileBounds(START_TILE_X, START_TILE_Y, 1, 1),
+            "START", Color.SKY, true);
 
         player = new Player(
-            startPoint.getCentre().x,
-            startPoint.getCentre().y,
+            gameMap.startZone.getCentre().x,
+            gameMap.startZone.getCentre().y,
             10,
             gameMap
         );
@@ -180,6 +168,9 @@ public class Main extends ApplicationAdapter {
         timerFont.getData().setScale(2f);
         timerLayout = new GlyphLayout();
         markerLayout = new GlyphLayout();
+
+        // Start the goose disposal counter from when the game begins.
+        gooseDisposalLayout = new GlyphLayout();
     }
 
     // Per frame behaviour
@@ -192,13 +183,13 @@ public class Main extends ApplicationAdapter {
         }
 
         // ---spawn logic begins---
-        if (!long_boi_spawned && timer <= 290f){
+        if (!long_boi_spawned && gooseDisposeCounter >= 10f){
             // spawns longboi related to the players position
             Vector2 spawnPos = player.getPos().cpy().add(300,300);
             longBoi = new LongBoi(
                 spawnPos.x,
                 spawnPos.y,
-                3,
+                5,
                 500,
                 gameMap
             );
@@ -207,20 +198,22 @@ public class Main extends ApplicationAdapter {
         }
 
 
-        if (timer <= 280f){
-            foxPoint = new GoalZone(gameMap.getTileBounds(FOX_TILE_X, FOX_TILE_Y, 1, 1),
-                "Den", Color.GREEN);
+        if (longBoi != null){
+            gameMap.addZone(
+                new GoalZone(gameMap.getTileBounds(FOX_TILE_X, FOX_TILE_Y, 1, 1),
+                    "Den", Color.GREEN, true)
+            );
         }
 
-        if (foxPoint != null && !foxPoint.isReached() && foxPoint.isOccupiedBy(player)) {
-            foxPoint.setReached(true);
+        if (gameMap.getZone("Den") != null && !gameMap.getZone("Den").isReached() && gameMap.getZone("Den").isOccupiedBy(player)) {
+            gameMap.getZone("Den").setReached(true);
             if  (!fox_spawned) {
                 // spawns fox related to the players position
                 Vector2 spawnPos = player.getPos();
                 fox = new Fox(
                     spawnPos.x,
                     spawnPos.y,
-                    3,
+                    5,
                     500,
                     gameMap
                 );
@@ -228,8 +221,6 @@ public class Main extends ApplicationAdapter {
                 System.out.println("fox has spawned!");
             }
         }
-
-
         // ---spawn logic ends---
 
         // Load map and set up camera
@@ -258,15 +249,8 @@ public class Main extends ApplicationAdapter {
             }
         }
 
-
         // Use items
-        // gameMap is now passed because Inventory.useItem needs it for the item's effect
-        if (Gdx.input.isKeyJustPressed(Input .Keys.E)) {
-            player.getInventory().useItem(Airhorn.class, gameMap, player);
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) {
-            player.getInventory().useItem(Goosedisguise.class, gameMap, player);
-        }
+        player.useItem();
 
         // Tick timed item effects once per frame
         // Fixed: gameMap and player are now passed because items need them to end their effects
@@ -274,44 +258,12 @@ public class Main extends ApplicationAdapter {
 
         // Uses a percentage chance to spawn a goose within the map
         if (RANDOM.nextDouble() < (Gdx.graphics.getDeltaTime() * GOOSE_SPAWN_CHANCE)) {
-            double posX;
-            double posY;
-            double angle = RANDOM.nextDouble(2 * Math.PI);
-            double offsetX = SPAWN_RADIUS * Math.sin(angle);
-            double offsetY = SPAWN_RADIUS * Math.cos(angle);
-
-            posX = camera.position.x + offsetX;
-            posY = camera.position.y + offsetY;
-
-            var goose = new Goose(
-                (float) posX,
-                (float) posY,
-                2,
-                300,
-                gameMap
-            );
-            gameMap.addGoose(goose);
+            gameMap.spawnGoose(camera.position);
         }
 
         //----------batch begins----------
         batch.begin();
         player.movePlayer();
-        // Draw the start and goal markers beneath the entities so the player is always visible.
-        startPoint.draw(batch, pixel, timerFont, markerLayout);
-
-        // Define goalPoint once score is reached -> DO NOT REINITIALISE
-        if(gooseDisposeCounter >= 2 && goalPoint == null) {
-            goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
-                "B", Color.MAGENTA);
-        }
-
-        if (goalPoint != null) {
-            goalPoint.draw(batch, pixel, timerFont, markerLayout);
-        }
-
-        if(foxPoint != null){
-            foxPoint.draw(batch, pixel, timerFont, markerLayout);
-        }
 
         Iterator<Goose> it = gameMap.getGeese().iterator();
         while(it.hasNext()){
@@ -345,28 +297,20 @@ public class Main extends ApplicationAdapter {
             fox.draw(batch);
         }
 
+        if(endConditionsMet){
+            gameMap.endZone.isDrawable = true;
+        }
+
+        gameMap.drawZones(batch, zonePixel, zoneFont, markerLayout);
         player.draw(batch);
         batch.end();
-
-
-
-        // Check whether the player has reached B. The timer stops once the goal is reached.
-        if (goalPoint!= null && !goalPoint.isReached() && goalPoint.isOccupiedBy(player)) {
-            goalPoint.setReached(true);
-            System.out.println("Player reached goal B");
-        }
+        //----------batch end----------
 
         //----------HUD: 5-minute countdown timer in the top-right corner----------
         hud.draw(batch, viewport, player);
         timer -= Gdx.graphics.getDeltaTime();
-        if (goalPoint != null && goalPoint.isReached()) {
+        if (gameMap.endZone != null && gameMap.endZone.isReached()) {
             endScreen.draw(batch, viewport, EndScreen.Result.REACHED_GOAL, TOTAL_TIME - timer);
-        }
-        if (goalPoint != null && !goalPoint.isReached()) {
-            timer -= Gdx.graphics.getDeltaTime();
-            if (timer < 0f) {
-                timer = 0f;
-            }
         }
 
         int minutes = (int) (timer / 60);
@@ -374,19 +318,30 @@ public class Main extends ApplicationAdapter {
         String timeText = String.format("%02d:%02d", minutes, seconds);
         timerLayout.setText(timerFont, timeText);
 
+        String gooseDisposalText = "Number of scared geese:" + String.valueOf(gooseDisposeCounter);
+        gooseDisposalLayout.setText(timerFont, gooseDisposalText);
+
         // Switch to screen coordinates so the timer stays fixed in the corner
         // of the window regardless of where the camera is.
         batch.getProjectionMatrix().setToOrtho2D(0, 0,
             Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
+        //----------hud batch begins----------
         batch.begin();
-        goalPoint.draw(batch, zonePixel, zoneFont, markerLayout);
-        float padding = 20f;
-        timerFont.draw(batch, timeText,
-            Gdx.graphics.getWidth() - timerLayout.width - padding,
-            Gdx.graphics.getHeight() - padding);
 
-        if (goalPoint != null && goalPoint.isReached()) {
+        // draw timer in top right corner.
+        float timerPadding = 20f;
+        timerFont.draw(batch, timeText,
+            Gdx.graphics.getWidth() - timerLayout.width - timerPadding,
+            Gdx.graphics.getHeight() - timerPadding);
+
+        // draw goose disposal counter in top right corner.
+        float gooseDisposalPadding = 50f;
+        timerFont.draw(batch, gooseDisposalText,
+            Gdx.graphics.getWidth() - gooseDisposalLayout.width - gooseDisposalPadding,
+            Gdx.graphics.getHeight() - gooseDisposalPadding);
+
+        if (gameMap.endZone != null && gameMap.endZone.isReached()) {
             String goalText = "Goal B reached!";
             markerLayout.setText(timerFont, goalText);
             timerFont.draw(batch, markerLayout,
@@ -394,17 +349,26 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getHeight() / 2f);
         }
         batch.end();
+        //----------hud batch ends----------
+
         if (player.isOutOfFood()) {
             gameOver = true;
             result = EndScreen.Result.LOST;
-        } else if (goalPoint.isOccupiedBy(player)) {
+
+        } else if (gameMap.endZone.isOccupiedBy(player) && endConditionsMet) {
+            gameMap.endZone.setReached(true);
             gameOver = true;
             result = EndScreen.Result.REACHED_GOAL;
+
         } else if (timer <= 0f) {
             gameOver = true;
             result = EndScreen.Result.SURVIVED;
         }
-        //----------HUD ends----------
+
+        //-------------------------Check if conditions for end of game have been met-------------------------
+        if(gooseDisposeCounter >= minDisposeCount){
+            endConditionsMet = true;
+        }
     }
 
     /** Draws the frozen world with the end screen on top, and listens for restart/quit. */
@@ -438,6 +402,7 @@ public class Main extends ApplicationAdapter {
     private void restart() {
         dispose();
         create();
+        gooseDisposeCounter = 0;
     }
 
     // Runs once at the end of the program
@@ -453,6 +418,7 @@ public class Main extends ApplicationAdapter {
         zonePixel.dispose();
         zoneFont.dispose();
 
+        player.dispose();
         for (Goose goose: gameMap.getGeese()){
             goose.dispose();
         }

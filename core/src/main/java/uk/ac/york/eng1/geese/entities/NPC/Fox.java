@@ -84,33 +84,4 @@ public class Fox extends AbstractNPC{
             }
         }
     }
-
-    /**
-     * Calculates which entity is closest to the fox within its vision.
-     *
-     * @param geese List of all goose entities.
-     * @param mainTarget either long boi entity if it is currently spawned, otherwise the player entity.
-     * @return closest entity in the fox's vision.
-     */
-    public AbstractEntity findClosestTarget(List<Goose> geese, AbstractEntity mainTarget){
-        Goose closestGoose = null;
-        float minDist = Float.MAX_VALUE;
-        float maxDist = 200f;
-        for(Goose goose: geese){
-            goose.calm();
-            float dist = this.getPos().dst2(goose.getPos());
-            if (dist < minDist){
-                minDist = dist;
-                closestGoose = goose;
-            }
-        }
-
-        float targetDist = this.pos.dst2(mainTarget.getPos());
-        if (minDist < targetDist){
-            closestGoose.scare();
-            return closestGoose;
-        }
-        return mainTarget;
-    }
-
 }
