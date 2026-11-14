@@ -19,6 +19,8 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class GoalZone {
 
+    public boolean isDrawable;
+
     /**
      * Thickness of the outline drawn around the region, in world units.
      */
@@ -55,12 +57,14 @@ public class GoalZone {
      * @param bounds the rectangle covered by the region, in world coordinates.
      * @param label  the text drawn in the middle of the region.
      * @param colour the colour of the region's fill, outline and label.
+     * @param isDrawable flag for determining if it should be drawn to batch -> does not block a draw call.
      */
-    public GoalZone(Rectangle bounds, String label, Color colour) {
+    public GoalZone(Rectangle bounds, String label, Color colour, boolean isDrawable) {
         this.bounds = bounds;
         this.label = label;
         this.colour = colour;
         this.reached = false;
+        this.isDrawable = isDrawable;
     }
 
     /**

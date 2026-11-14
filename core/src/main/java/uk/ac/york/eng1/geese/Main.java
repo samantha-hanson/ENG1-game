@@ -56,14 +56,14 @@ public class Main extends ApplicationAdapter {
     private LongBoi longBoi;
     // initially set to false, set to true when 2 minutes have passed
     private boolean long_boi_spawned = false;
-    
+
     private Fox fox;
     // initially set to false, set to true when the timer reaches 2 minutes 45 seconds have passed
     private boolean fox_spawned = false;
 
 //    private GoalZone startPoint;
 //    private GoalZone goalPoint;
-    private GoalZone foxPoint;
+//    private GoalZone foxPoint;
     private Texture pixel;
     private GlyphLayout markerLayout;
 
@@ -141,12 +141,11 @@ public class Main extends ApplicationAdapter {
         zoneFont.getData().setScale(2f);
         zoneLayout = new GlyphLayout();
 
-        int[] mapSize = gameMap.getSizeInTiles();
-        gameMap.endZone = new GoalZone(gameMap.getTileBounds(0, 3, 3, 3), "END ZONE", Color.GREEN);
+        gameMap.endZone = new GoalZone(gameMap.getTileBounds(0, 3, 3, 3), "END ZONE", Color.GREEN, false);
 
         // The player starts at A, in the centre of the bottom-left tile, and has to reach B.
         gameMap.startZone = new GoalZone(gameMap.getTileBounds(START_TILE_X, START_TILE_Y, 1, 1),
-            "START", Color.SKY);
+            "START", Color.SKY, true);
 
         player = new Player(
             gameMap.startZone.getCentre().x,
@@ -198,13 +197,15 @@ public class Main extends ApplicationAdapter {
         }
 
 
-        if (timer <= 280f){
-            foxPoint = new GoalZone(gameMap.getTileBounds(FOX_TILE_X, FOX_TILE_Y, 1, 1),
-                "Den", Color.GREEN);
+        if (timer <= 300f){
+            gameMap.addZone(
+                new GoalZone(gameMap.getTileBounds(FOX_TILE_X, FOX_TILE_Y, 1, 1),
+                    "Den", Color.GREEN, true)
+            );
         }
 
-        if (foxPoint != null && !foxPoint.isReached() && foxPoint.isOccupiedBy(player)) {
-            foxPoint.setReached(true);
+        if (gameMap.getZone("Den") != null && !gameMap.getZone("Den").isReached() && gameMap.getZone("Den").isOccupiedBy(player)) {
+            gameMap.getZone("Den").setReached(true);
             if  (!fox_spawned) {
                 // spawns fox related to the players position
                 Vector2 spawnPos = player.getPos();
@@ -262,12 +263,6 @@ public class Main extends ApplicationAdapter {
         //----------batch begins----------
         batch.begin();
         player.movePlayer();
-        // Draw the start and goal markers beneath the entities so the player is always visible.
-        gameMap.startZone.draw(batch, pixel, timerFont, markerLayout);
-
-        if(foxPoint != null){
-            foxPoint.draw(batch, pixel, timerFont, markerLayout);
-        }
 
         Iterator<Goose> it = gameMap.getGeese().iterator();
         while(it.hasNext()){
@@ -302,9 +297,10 @@ public class Main extends ApplicationAdapter {
         }
 
         if(endConditionsMet){
-            gameMap.endZone.draw(batch, zonePixel, zoneFont, markerLayout);
+            gameMap.endZone.isDrawable = true;
         }
 
+        gameMap.drawZones(batch, zonePixel, zoneFont, markerLayout);
         player.draw(batch);
         batch.end();
         //----------batch end----------
@@ -314,12 +310,6 @@ public class Main extends ApplicationAdapter {
         timer -= Gdx.graphics.getDeltaTime();
         if (gameMap.endZone != null && gameMap.endZone.isReached()) {
             endScreen.draw(batch, viewport, EndScreen.Result.REACHED_GOAL, TOTAL_TIME - timer);
-        }
-        if (gameMap.endZone != null && !gameMap.endZone.isReached()) {
-            timer -= Gdx.graphics.getDeltaTime();
-            if (timer < 0f) {
-                timer = 0f;
-            }
         }
 
         int minutes = (int) (timer / 60);

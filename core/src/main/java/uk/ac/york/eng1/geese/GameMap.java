@@ -1,6 +1,10 @@
 package uk.ac.york.eng1.geese;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -9,13 +13,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import org.w3c.dom.Text;
 import uk.ac.york.eng1.geese.entities.GoalZone;
 import uk.ac.york.eng1.geese.entities.NPC.Goose;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Class used for managing the map state including LibGDX Map and rendering objects, regions of interest,
@@ -44,7 +46,7 @@ public class GameMap {
     private final List<Goose> geese = new ArrayList<>();
 
     // variables for managing zones of interest
-    private final HashMap<String, GoalZone> zones = new HashMap<String, GoalZone>(); // Store based on label
+    private final Map<String, GoalZone> zones = new HashMap<String, GoalZone>(); // Store based on label
     public GoalZone startZone;
     public GoalZone endZone;
 
@@ -188,11 +190,21 @@ public class GameMap {
     }
 
     // ====================zone methods ====================
-    public void setStartZone(GoalZone startZone){
-        this.startZone = startZone;
-    }
-    public void setEndZone(GoalZone endZone){
-        this.endZone = endZone;
+
+    public void drawZones(SpriteBatch batch, Texture pixel, BitmapFont font, GlyphLayout layout){
+        if(this.startZone.isDrawable){
+            this.startZone.draw(batch, pixel, font, layout);
+        }
+        if(this.endZone.isDrawable){
+            this.endZone.draw(batch, pixel, font, layout);
+        }
+
+        for(Map.Entry<String, GoalZone> entry : this.zones.entrySet()){
+            GoalZone zone = entry.getValue();
+            if(zone.isDrawable){
+                zone.draw(batch, pixel, font, layout);
+            }
+        }
     }
 
     public void addZone(GoalZone zone){
