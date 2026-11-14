@@ -151,8 +151,10 @@ public class Main extends ApplicationAdapter {
         // The player starts at A, in the centre of the bottom-left tile, and has to reach B.
         startPoint = new GoalZone(gameMap.getTileBounds(START_TILE_X, START_TILE_Y, 1, 1),
             "A", Color.SKY);
-        goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
-            "B", Color.MAGENTA);
+        if(gooseDisposeCounter >= 50) {
+            goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
+                "B", Color.MAGENTA);
+        }
 
 
         player = new Player(
@@ -296,6 +298,7 @@ public class Main extends ApplicationAdapter {
         player.movePlayer();
         // Draw the start and goal markers beneath the entities so the player is always visible.
         startPoint.draw(batch, pixel, timerFont, markerLayout);
+<<<<<<< HEAD
 
 
         if(foxPoint != null){
@@ -355,7 +358,7 @@ public class Main extends ApplicationAdapter {
             Gdx.graphics.getWidth() - timerLayout.width - padding,
             Gdx.graphics.getHeight() - padding);
 
-        if (goalPoint.isReached()) {
+        if (goalPoint != null && goalPoint.isReached()) {
             String goalText = "Goal B reached!";
             markerLayout.setText(timerFont, goalText);
             timerFont.draw(batch, markerLayout,
