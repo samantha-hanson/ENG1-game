@@ -256,7 +256,6 @@ public class Main extends ApplicationAdapter {
             }
         }
 
-
         // Use items
         player.useItem();
 

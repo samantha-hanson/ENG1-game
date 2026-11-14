@@ -132,6 +132,12 @@ public class GameMap {
         this.geese.add(goose);
     }
 
+    /**
+     * uses random and angles to produce a random distance from the player at which the goose is spawned
+     * and added to stored entities.
+     *
+     * @param origin the center point around which a goose is spawned
+     */
     public void spawnGoose(Vector2 origin){
         double angle = RANDOM.nextDouble(2 * Math.PI);
         double offsetX = SPAWN_RADIUS * Math.sin(angle);
@@ -145,16 +151,23 @@ public class GameMap {
         );
     }
 
+    /**
+     * uses random and angles to produce a random distance from the player at which the goose is spawned
+     * and added to stored entities.
+     *
+     * @param origin the center point around which a goose is spawned
+     */
     public void spawnGoose(Vector3 origin){
         double angle = RANDOM.nextDouble(2 * Math.PI);
         double offsetX = SPAWN_RADIUS * Math.sin(angle);
         double offsetY = SPAWN_RADIUS * Math.cos(angle);
 
-        float posX = (float) (origin.x + offsetX);
-        float posY = (float) (origin.y + offsetY);
-
-        this.addGoose(
-            new Goose(posX, posY, 2, 300, this)
+        this.addGoose(new Goose(
+            (float) (origin.x + offsetX),
+            (float) (origin.y + offsetY),
+            2,
+            300,
+            this)
         );
     }
     /**
