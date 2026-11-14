@@ -92,7 +92,7 @@ public class Main extends ApplicationAdapter {
     /** Food a goose takes per bite. */
     private static final int BITE_AMOUNT = 10;
     private static final double GOOSE_SPAWN_CHANCE = 0.5f;
-    private static final double SPAWN_RADIUS = 500;
+
     private static final Random RANDOM = new Random();
 
     /** How the game ended; null while the game is still running. */
@@ -272,23 +272,7 @@ public class Main extends ApplicationAdapter {
 
         // Uses a percentage chance to spawn a goose within the map
         if (RANDOM.nextDouble() < (Gdx.graphics.getDeltaTime() * GOOSE_SPAWN_CHANCE)) {
-            double posX;
-            double posY;
-            double angle = RANDOM.nextDouble(2 * Math.PI);
-            double offsetX = SPAWN_RADIUS * Math.sin(angle);
-            double offsetY = SPAWN_RADIUS * Math.cos(angle);
-
-            posX = camera.position.x + offsetX;
-            posY = camera.position.y + offsetY;
-
-            var goose = new Goose(
-                (float) posX,
-                (float) posY,
-                2,
-                300,
-                gameMap
-            );
-            gameMap.addGoose(goose);
+            gameMap.spawnGoose(camera.position);
         }
 
         //----------batch begins----------

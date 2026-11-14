@@ -8,21 +8,24 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import uk.ac.york.eng1.geese.entities.NPC.Goose;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Class used for managing the map state including LibGDX Map and rendering objects, regions of interest,
  * and entity movement boundaries.
  */
 public class GameMap {
+    private static final Random RANDOM = new Random();
 
-    final public float mapBoundLeft;
-    final public float mapBoundRight;
-    final public float mapBoundRoof;
-    final public float mapBoundFloor;
+    final private float mapBoundLeft;
+    final private float mapBoundRight;
+    final private float mapBoundRoof;
+    final private float mapBoundFloor;
 
     final private int mapWidthInTiles;
     final private int mapHeightInTiles;
@@ -33,10 +36,10 @@ public class GameMap {
     private MapProperties mapProps;
     private OrthogonalTiledMapRenderer renderer;
 
-    /**
-     * All geese currently on the map. Lets items such as the Airhorn reach them through the GameMap.
-     */
-    private List<Goose> geese = new ArrayList<>();
+    // variables for spawning geese and managing geese
+    private static final double SPAWN_RADIUS = 500;
+    /** All geese currently on the map. Lets items such as the Airhorn reach them through the GameMap. */
+    private final List<Goose> geese = new ArrayList<>();
 
     /**
      * Creates a GameMap object using the txm object and LIBGDX's TiledMap class. Initialises the world
@@ -129,6 +132,31 @@ public class GameMap {
         this.geese.add(goose);
     }
 
+    public void spawnGoose(Vector2 origin){
+        double angle = RANDOM.nextDouble(2 * Math.PI);
+        double offsetX = SPAWN_RADIUS * Math.sin(angle);
+        double offsetY = SPAWN_RADIUS * Math.cos(angle);
+
+        float posX = (float) (origin.x + offsetX);
+        float posY = (float) (origin.y + offsetY);
+
+        this.addGoose(
+            new Goose(posX, posY, 2, 300, this)
+        );
+    }
+
+    public void spawnGoose(Vector3 origin){
+        double angle = RANDOM.nextDouble(2 * Math.PI);
+        double offsetX = SPAWN_RADIUS * Math.sin(angle);
+        double offsetY = SPAWN_RADIUS * Math.cos(angle);
+
+        float posX = (float) (origin.x + offsetX);
+        float posY = (float) (origin.y + offsetY);
+
+        this.addGoose(
+            new Goose(posX, posY, 2, 300, this)
+        );
+    }
     /**
      * Fetch all geese currently on the map.
      *
