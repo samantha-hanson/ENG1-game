@@ -70,8 +70,8 @@ public class Main extends ApplicationAdapter {
     // initially set to false, set to true when the timer reaches 2 minutes 45 seconds have passed
     private boolean fox_spawned = false;
 
-    private GoalZone startPoint;
-    private GoalZone goalPoint;
+//    private GoalZone startPoint;
+//    private GoalZone goalPoint;
     private GoalZone foxPoint;
     private Texture pixel;
     private GlyphLayout markerLayout;
@@ -151,15 +151,15 @@ public class Main extends ApplicationAdapter {
         zoneLayout = new GlyphLayout();
 
         int[] mapSize = gameMap.getSizeInTiles();
-        goalPoint = new GoalZone(gameMap.getTileBounds(0, 3, 3, 3), "TEST GOAL A", Color.GREEN);
+        gameMap.endZone = new GoalZone(gameMap.getTileBounds(0, 3, 3, 3), "END ZONE", Color.GREEN);
 
         // The player starts at A, in the centre of the bottom-left tile, and has to reach B.
-        startPoint = new GoalZone(gameMap.getTileBounds(START_TILE_X, START_TILE_Y, 1, 1),
-            "Start point", Color.SKY);
+        gameMap.startZone = new GoalZone(gameMap.getTileBounds(START_TILE_X, START_TILE_Y, 1, 1),
+            "START", Color.SKY);
 
         player = new Player(
-            startPoint.getCentre().x,
-            startPoint.getCentre().y,
+            gameMap.startZone.getCentre().x,
+            gameMap.startZone.getCentre().y,
             10,
             gameMap
         );
@@ -272,7 +272,7 @@ public class Main extends ApplicationAdapter {
         batch.begin();
         player.movePlayer();
         // Draw the start and goal markers beneath the entities so the player is always visible.
-        startPoint.draw(batch, pixel, timerFont, markerLayout);
+        gameMap.startZone.draw(batch, pixel, timerFont, markerLayout);
 
         if(foxPoint != null){
             foxPoint.draw(batch, pixel, timerFont, markerLayout);
@@ -311,7 +311,7 @@ public class Main extends ApplicationAdapter {
         }
 
         if(endConditionsMet){
-            goalPoint.draw(batch, zonePixel, zoneFont, markerLayout);
+            gameMap.endZone.draw(batch, zonePixel, zoneFont, markerLayout);
         }
 
         player.draw(batch);
@@ -321,10 +321,10 @@ public class Main extends ApplicationAdapter {
         //----------HUD: 5-minute countdown timer in the top-right corner----------
         hud.draw(batch, viewport, player);
         timer -= Gdx.graphics.getDeltaTime();
-        if (goalPoint != null && goalPoint.isReached()) {
+        if (gameMap.endZone != null && gameMap.endZone.isReached()) {
             endScreen.draw(batch, viewport, EndScreen.Result.REACHED_GOAL, TOTAL_TIME - timer);
         }
-        if (goalPoint != null && !goalPoint.isReached()) {
+        if (gameMap.endZone != null && !gameMap.endZone.isReached()) {
             timer -= Gdx.graphics.getDeltaTime();
             if (timer < 0f) {
                 timer = 0f;
@@ -349,7 +349,7 @@ public class Main extends ApplicationAdapter {
             Gdx.graphics.getWidth() - timerLayout.width - padding,
             Gdx.graphics.getHeight() - padding);
 
-        if (goalPoint != null && goalPoint.isReached()) {
+        if (gameMap.endZone != null && gameMap.endZone.isReached()) {
             String goalText = "Goal B reached!";
             markerLayout.setText(timerFont, goalText);
             timerFont.draw(batch, markerLayout,
@@ -363,8 +363,8 @@ public class Main extends ApplicationAdapter {
             gameOver = true;
             result = EndScreen.Result.LOST;
 
-        } else if (goalPoint.isOccupiedBy(player) && endConditionsMet) {
-            goalPoint.setReached(true);
+        } else if (gameMap.endZone.isOccupiedBy(player) && endConditionsMet) {
+            gameMap.endZone.setReached(true);
             gameOver = true;
             result = EndScreen.Result.REACHED_GOAL;
 

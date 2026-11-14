@@ -9,9 +9,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import uk.ac.york.eng1.geese.entities.GoalZone;
 import uk.ac.york.eng1.geese.entities.NPC.Goose;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -40,6 +42,11 @@ public class GameMap {
     private static final double SPAWN_RADIUS = 500;
     /** All geese currently on the map. Lets items such as the Airhorn reach them through the GameMap. */
     private final List<Goose> geese = new ArrayList<>();
+
+    // variables for managing zones of interest
+    private final HashMap<String, GoalZone> zones = new HashMap<String, GoalZone>(); // Store based on label
+    public GoalZone startZone;
+    public GoalZone endZone;
 
     /**
      * Creates a GameMap object using the txm object and LIBGDX's TiledMap class. Initialises the world
@@ -170,6 +177,7 @@ public class GameMap {
             this)
         );
     }
+
     /**
      * Fetch all geese currently on the map.
      *
@@ -177,6 +185,26 @@ public class GameMap {
      */
     public List<Goose> getGeese(){
         return this.geese;
+    }
+
+    // ====================zone methods ====================
+    public void setStartZone(GoalZone startZone){
+        this.startZone = startZone;
+    }
+    public void setEndZone(GoalZone endZone){
+        this.endZone = endZone;
+    }
+
+    public void addZone(GoalZone zone){
+        this.zones.put(zone.getLabel(), zone);
+    }
+
+    public GoalZone getZone(String label){
+        return this.zones.get(label);
+    }
+
+    public void removeZone(String label){
+        this.zones.remove(label);
     }
 
     /**
