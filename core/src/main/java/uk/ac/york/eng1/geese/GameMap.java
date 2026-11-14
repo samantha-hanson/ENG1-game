@@ -156,7 +156,7 @@ public class GameMap {
         float posY = (float) (origin.y + offsetY);
 
         this.addGoose(
-            new Goose(posX, posY, 2, 300, this)
+            new Goose(posX, posY, 5, 300, this)
         );
     }
 

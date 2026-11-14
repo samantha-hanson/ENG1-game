@@ -61,9 +61,6 @@ public class Main extends ApplicationAdapter {
     // initially set to false, set to true when the timer reaches 2 minutes 45 seconds have passed
     private boolean fox_spawned = false;
 
-//    private GoalZone startPoint;
-//    private GoalZone goalPoint;
-//    private GoalZone foxPoint;
     private Texture pixel;
     private GlyphLayout markerLayout;
 
@@ -82,7 +79,7 @@ public class Main extends ApplicationAdapter {
     private Hud hud;
     /** Food a goose takes per bite. */
     private static final int BITE_AMOUNT = 10;
-    private static final double GOOSE_SPAWN_CHANCE = 0.5f;
+    private static final double GOOSE_SPAWN_CHANCE = 1f;
 
     private static final Random RANDOM = new Random();
 
@@ -97,7 +94,7 @@ public class Main extends ApplicationAdapter {
     private int gooseDisposeCounter = 0;
 
     // Variables for ending the game
-    private float minDisposeCount = 0f;
+    private float minDisposeCount = 50f;
     private  boolean endConditionsMet = false;
 
     @Override
@@ -182,13 +179,13 @@ public class Main extends ApplicationAdapter {
         }
 
         // ---spawn logic begins---
-        if (!long_boi_spawned && timer <= 290f){
+        if (!long_boi_spawned && gooseDisposeCounter >= 10f){
             // spawns longboi related to the players position
             Vector2 spawnPos = player.getPos().cpy().add(300,300);
             longBoi = new LongBoi(
                 spawnPos.x,
                 spawnPos.y,
-                3,
+                5,
                 500,
                 gameMap
             );
@@ -197,7 +194,7 @@ public class Main extends ApplicationAdapter {
         }
 
 
-        if (timer <= 300f){
+        if (longBoi != null){
             gameMap.addZone(
                 new GoalZone(gameMap.getTileBounds(FOX_TILE_X, FOX_TILE_Y, 1, 1),
                     "Den", Color.GREEN, true)
@@ -212,7 +209,7 @@ public class Main extends ApplicationAdapter {
                 fox = new Fox(
                     spawnPos.x,
                     spawnPos.y,
-                    3,
+                    5,
                     500,
                     gameMap
                 );
@@ -391,6 +388,7 @@ public class Main extends ApplicationAdapter {
     private void restart() {
         dispose();
         create();
+        gooseDisposeCounter = 0;
     }
 
     // Runs once at the end of the program

@@ -39,7 +39,7 @@ public class Airhorn extends AbstractItems {
         super("Airhorn",
             "Blast it to scare nearby geese away ",
             sprite,
-            3,
+            20,
             2f);
         this.sound = sound;
     }

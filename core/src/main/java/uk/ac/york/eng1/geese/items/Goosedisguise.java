@@ -33,7 +33,7 @@ public class Goosedisguise extends AbstractItems {
         super("Disguise",
             "Use it to sneak past geese",
             sprite,
-            2,
+            10,
             10f);
     }
 
