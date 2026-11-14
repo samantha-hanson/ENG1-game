@@ -72,6 +72,7 @@ public class Main extends ApplicationAdapter {
     private BitmapFont timerFont;
     private GlyphLayout timerLayout;
     private GlyphLayout gooseDisposalLayout;
+    private GlyphLayout hiddenEventsLayout;
     private float timer;
 
     private EndScreen endScreen;
@@ -93,6 +94,12 @@ public class Main extends ApplicationAdapter {
     private GlyphLayout zoneLayout;
 
     private int gooseDisposeCounter = 0;
+
+    /** How many hidden events there are in the game: Long Boi appearing and the fox den. */
+    private static final int TOTAL_HIDDEN_EVENTS = 2;
+
+    /** How many hidden events the player has triggered this game. Reset to 0 on restart. */
+    private int hiddenEventsFound = 0;
 
     // Variables for ending the game
     private float minDisposeCount = 50f;
@@ -171,6 +178,9 @@ public class Main extends ApplicationAdapter {
 
         // Start the goose disposal counter from when the game begins.
         gooseDisposalLayout = new GlyphLayout();
+
+        // Measures the hidden events counter text so it can be placed under the geese counter.
+        hiddenEventsLayout = new GlyphLayout();
     }
 
     // Per frame behaviour
@@ -194,6 +204,8 @@ public class Main extends ApplicationAdapter {
                 gameMap
             );
             long_boi_spawned = true;
+            // Hidden event 1 found. long_boi_spawned stops this from running again, so it only counts once.
+            hiddenEventsFound++;
             System.out.println("Long Boi has spawned!");
         }
 
@@ -218,6 +230,8 @@ public class Main extends ApplicationAdapter {
                     gameMap
                 );
                 fox_spawned = true;
+                // Hidden event 2 found. fox_spawned stops this from running again, so it only counts once.
+                hiddenEventsFound++;
                 System.out.println("fox has spawned!");
             }
         }
@@ -321,6 +335,9 @@ public class Main extends ApplicationAdapter {
         String gooseDisposalText = "Number of scared geese:" + String.valueOf(gooseDisposeCounter);
         gooseDisposalLayout.setText(timerFont, gooseDisposalText);
 
+        String hiddenEventsText = "Hidden events found: " + hiddenEventsFound + "/" + TOTAL_HIDDEN_EVENTS;
+        hiddenEventsLayout.setText(timerFont, hiddenEventsText);
+
         // Switch to screen coordinates so the timer stays fixed in the corner
         // of the window regardless of where the camera is.
         batch.getProjectionMatrix().setToOrtho2D(0, 0,
@@ -340,6 +357,13 @@ public class Main extends ApplicationAdapter {
         timerFont.draw(batch, gooseDisposalText,
             Gdx.graphics.getWidth() - gooseDisposalLayout.width - gooseDisposalPadding,
             Gdx.graphics.getHeight() - gooseDisposalPadding);
+
+        // draw hidden events counter under the goose disposal counter, lined up with its right edge.
+        // y is the top of the text, so step down by the geese counter's height plus a small gap.
+        float hiddenEventsGap = 10f;
+        timerFont.draw(batch, hiddenEventsText,
+            Gdx.graphics.getWidth() - hiddenEventsLayout.width - gooseDisposalPadding,
+            Gdx.graphics.getHeight() - gooseDisposalPadding - gooseDisposalLayout.height - hiddenEventsGap);
 
         if (gameMap.endZone != null && gameMap.endZone.isReached()) {
             String goalText = "Goal B reached!";
@@ -403,6 +427,7 @@ public class Main extends ApplicationAdapter {
         dispose();
         create();
         gooseDisposeCounter = 0;
+        hiddenEventsFound = 0;
     }
 
     // Runs once at the end of the program
