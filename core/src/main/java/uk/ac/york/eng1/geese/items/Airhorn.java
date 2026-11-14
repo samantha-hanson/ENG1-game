@@ -13,6 +13,8 @@ import com.badlogic.gdx.audio.Sound;
  * <p>
  *     Extends abstract items by adding a way for the item to interact with the world and the geese
  * </p>
+ * <p>Requirements: UR_ITEMS, UR_GEESE_DISPERSAL, UR_MECHANICS, FR_GEESE_REMOVAL, FR_VIOLENCE_PROHIBITED,
+ * QR_NON_VIOLENCE (a loud noise scares geese away without harming them)</p>
  */
 
 public class Airhorn extends AbstractItems {
@@ -46,6 +48,7 @@ public class Airhorn extends AbstractItems {
 
     /**
      * Scares every goose within SCARE_RADIUS of the player and plays an airhorn sound
+     * <p>Requirements: UR_ACCESSIBLITY (sound, plus the geese visibly running away)</p>
      * @param gameMap Passed to the item so its effect can reach the geese.
      * @param player The player using the item.
      */

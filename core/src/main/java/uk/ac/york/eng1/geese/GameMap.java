@@ -16,6 +16,7 @@ import java.util.List;
 /**
  * Class used for managing the map state including LibGDX Map and rendering objects, regions of interest,
  * and entity movement boundaries.
+ * <p>Requirements: UR_GAME_STYLE, QR_VISUAL_CONSISTENCY (renders the top-down park map)</p>
  */
 public class GameMap {
 
@@ -35,6 +36,7 @@ public class GameMap {
 
     /**
      * All geese currently on the map. Lets items such as the Airhorn reach them through the GameMap.
+     * <p>Requirements: UR_GEESE</p>
      */
     private List<Goose> geese = new ArrayList<>();
 
@@ -77,6 +79,7 @@ public class GameMap {
 
     /**
      * Clamps the passed vector according to the world bounds. Changes are made in-place and modifies the passed vector.
+     * <p>Requirements: QR_NAVIGATE_MAP (entities can move anywhere between the map boundaries, but not past them)</p>
      *
      * @param pos The position vector to be bound by the world.
      */

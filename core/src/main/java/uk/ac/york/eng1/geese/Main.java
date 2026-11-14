@@ -43,6 +43,10 @@ import java.util.Random;
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
  */
 public class Main extends ApplicationAdapter {
+    /**
+     * Length of the timed gameplay phase in seconds (five minutes).
+     * <p>Requirements: UR_TIMER, FR_TIME_END, QR_TIMER_ACCURACY</p>
+     */
     private static final float TOTAL_TIME = 300F;
 
     // Start point A: the bottom-left tile of the map, (0, 19) in Tiled coordinates.
@@ -63,15 +67,34 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
 
     private Player player;
+
+    /**
+     * Long boi, spawned by a hidden event partway through the game.
+     * <p>Requirements: UR_HIDDEN_EVENTS, FR_HIDDEN_EVENTS</p>
+     */
     private LongBoi longBoi;
     // initially set to false, set to true when 2 minutes have passed
     private boolean long_boi_spawned = false;
+
+    /**
+     * The fox, spawned by the fox den hidden event when the player walks into the den.
+     * <p>Requirements: UR_HIDDEN_EVENTS, FR_HIDDEN_EVENTS</p>
+     */
     private Fox fox;
     // initially set to false, set to true when the timer reaches 2 minutes 45 seconds have passed
     private boolean fox_spawned = false;
 
+    /**
+     * Start point A and goal point B of the player's task: get the Yorkshire pudding from A to B.
+     * <p>Requirements: UR_PLAYER_MISSION, FR_TASK</p>
+     */
     private GoalZone startPoint;
     private GoalZone goalPoint;
+
+    /**
+     * The fox den. Walking into it triggers the fox hidden event.
+     * <p>Requirements: UR_HIDDEN_EVENTS, FR_HIDDEN_EVENTS</p>
+     */
     private GoalZone foxPoint;
     private Texture pixel;
     private GlyphLayout markerLayout;
@@ -89,8 +112,16 @@ public class Main extends ApplicationAdapter {
     private boolean gameOver = false;
 
     private Hud hud;
-    /** Food a goose takes per bite. */
+    /**
+     * Food a goose takes per bite.
+     * <p>Requirements: FR_BASE_DIFFICULTY, QR_BASE_DIFFICULTY</p>
+     */
     private static final int BITE_AMOUNT = 10;
+
+    /**
+     * Average number of geese spawned per second, and how far from the camera they appear.
+     * <p>Requirements: UR_GEESE, FR_BASE_DIFFICULTY, QR_BASE_DIFFICULTY</p>
+     */
     private static final double GOOSE_SPAWN_CHANCE = 0.5f;
     private static final double SPAWN_RADIUS = 500;
     private static final Random RANDOM = new Random();
@@ -103,13 +134,22 @@ public class Main extends ApplicationAdapter {
     private BitmapFont zoneFont;
     private GlyphLayout zoneLayout;
 
+    /**
+     * How many scared geese have been dispersed (despawned) this game.
+     * <p>Requirements: UR_TIMER (disperse enough geese before time is up), UR_PLAYER_MISSION, FR_GEESE_REMOVAL</p>
+     */
     private int gooseDisposeCounter = 0;
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
     }
 
-    // Runs once on start-up
+    /**
+     * Runs once on start-up, and again on restart. Loads the map, places start point A and goal point B,
+     * creates the player and gives them their starting items, and starts the five-minute timer.
+     * <p>Requirements: UR_GAME_STYLE (park map), UR_PLAYER_MISSION, FR_TASK (points A and B),
+     * UR_ITEMS, FR_ITEMS (the two starting items), UR_TIMER, FR_TIME_END (timer start)</p>
+     */
     @Override
     public void create() {
         longBoi = null;
@@ -131,7 +171,9 @@ public class Main extends ApplicationAdapter {
         pixmap.dispose();
 
         // load the map, and constrict entity movement
-        float unitScale = 5f;
+        // unitScale 2 draws each 32px tile as 64 world units, the same size as the 64x64 sprites,
+        // so map pixels and sprite pixels match and about 12 x 9 tiles fit on screen.
+        float unitScale = 2f;
         gameMap = new GameMap("park.tmx", unitScale);
 
         // Goal zone B: a 3x3 tile block in the top-right corner of the map
@@ -182,7 +224,18 @@ public class Main extends ApplicationAdapter {
         markerLayout = new GlyphLayout();
     }
 
-    // Per frame behaviour
+    /**
+     * Runs once per frame: updates and draws the whole game. Each section is marked with its requirements.
+     * <ul>
+     *     <li>Hidden events (long boi, fox den): UR_HIDDEN_EVENTS, FR_HIDDEN_EVENTS</li>
+     *     <li>Goose bites: UR_GEESE, FR_GEESE_AVOIDENCE, FR_BASE_DIFFICULTY</li>
+     *     <li>Item keys (E for the Airhorn, Q for the disguise): UR_GAME_CONTROLS, FR_SELECT_ITEM, QR_ITEM_USABILITY</li>
+     *     <li>Goose spawning: UR_GEESE</li>
+     *     <li>Despawning scared geese: UR_GEESE_DISPERSAL, FR_GEESE_REMOVAL</li>
+     *     <li>Goal B and the end of the game: UR_PLAYER_MISSION, FR_TASK</li>
+     *     <li>Countdown timer: UR_TIMER, FR_TIME_END, QR_TIMER_ACCURACY, QR_DISPLAY_RELIABILITY</li>
+     * </ul>
+     */
     @Override
     public void render() {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
@@ -191,7 +244,7 @@ public class Main extends ApplicationAdapter {
             return;
         }
 
-        // ---spawn logic begins---
+        // ---spawn logic begins--- (UR_HIDDEN_EVENTS, FR_HIDDEN_EVENTS)
         if (!long_boi_spawned && timer <= 290f){
             // spawns longboi related to the players position
             Vector2 spawnPos = player.getPos().cpy().add(300,300);
@@ -241,6 +294,7 @@ public class Main extends ApplicationAdapter {
         // food timer
         player.updateFoodTimer(Gdx.graphics.getDeltaTime());
 
+        // Goose bites (UR_GEESE, FR_GEESE_AVOIDENCE, FR_BASE_DIFFICULTY)
         for (Goose goose : gameMap.getGeese()) {
             // Geese can't bite a disguised player and when Scared, matching how they ignore them when targeting
             if (!player.getDisguised() && goose.getStatus() != Status.SCARED && player.getHitbox().overlaps(goose.getHitbox())) {
@@ -259,7 +313,7 @@ public class Main extends ApplicationAdapter {
         }
 
 
-        // Use items
+        // Use items (UR_GAME_CONTROLS, FR_SELECT_ITEM, QR_ITEM_USABILITY)
         // gameMap is now passed because Inventory.useItem needs it for the item's effect
         if (Gdx.input.isKeyJustPressed(Input .Keys.E)) {
             player.getInventory().useItem(Airhorn.class, gameMap, player);
@@ -272,7 +326,7 @@ public class Main extends ApplicationAdapter {
         // Fixed: gameMap and player are now passed because items need them to end their effects
         player.getInventory().update(Gdx.graphics.getDeltaTime(), gameMap, player);
 
-        // Uses a percentage chance to spawn a goose within the map
+        // Uses a percentage chance to spawn a goose within the map (UR_GEESE)
         if (RANDOM.nextDouble() < (Gdx.graphics.getDeltaTime() * GOOSE_SPAWN_CHANCE)) {
             double posX;
             double posY;
@@ -313,6 +367,7 @@ public class Main extends ApplicationAdapter {
             foxPoint.draw(batch, pixel, timerFont, markerLayout);
         }
 
+        // Despawn scared geese once they are far from the player (UR_GEESE_DISPERSAL, FR_GEESE_REMOVAL)
         Iterator<Goose> it = gameMap.getGeese().iterator();
         while(it.hasNext()){
             Goose goose = it.next();
@@ -350,15 +405,15 @@ public class Main extends ApplicationAdapter {
 
 
 
-        // Check whether the player has reached B. The timer stops once the goal is reached.
+        // Check whether the player has reached B. The timer stops once the goal is reached. (UR_PLAYER_MISSION, FR_TASK)
         if (goalPoint!= null && !goalPoint.isReached() && goalPoint.isOccupiedBy(player)) {
             goalPoint.setReached(true);
             System.out.println("Player reached goal B");
         }
 
         //----------HUD: 5-minute countdown timer in the top-right corner----------
+        // (UR_FEATURE_DISPLAY, UR_TIMER, FR_TIME_END, QR_TIMER_ACCURACY, QR_DISPLAY_RELIABILITY)
         hud.draw(batch, viewport, player);
-        timer -= Gdx.graphics.getDeltaTime();
         if (goalPoint != null && goalPoint.isReached()) {
             endScreen.draw(batch, viewport, EndScreen.Result.REACHED_GOAL, TOTAL_TIME - timer);
         }
@@ -440,7 +495,10 @@ public class Main extends ApplicationAdapter {
         create();
     }
 
-    // Runs once at the end of the program
+    /**
+     * Runs once at the end of the program, and before a restart. Frees every texture, font and sound.
+     * <p>Requirements: QR_STABILITY (stops resources building up across restarts)</p>
+     */
     @Override
     public void dispose() {
         batch.dispose();

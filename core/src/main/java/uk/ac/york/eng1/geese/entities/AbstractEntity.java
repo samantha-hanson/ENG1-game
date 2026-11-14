@@ -13,6 +13,7 @@ import uk.ac.york.eng1.geese.GameMap;
  * Also stores the boundaries for valid entity movement as floats, which inheriting entities will use to prevent out of bound
  * behaviour.
  * </p>
+ * <p>Requirements: UR_GAME_STYLE, QR_VISUAL_CONSISTENCY (every entity is drawn the same way, from its centre).</p>
  */
 public abstract class AbstractEntity {
     /**

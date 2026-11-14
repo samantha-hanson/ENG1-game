@@ -14,8 +14,9 @@ import com.badlogic.gdx.math.Vector2;
  * <p>
  * The region is stored as a world-space rectangle, so it can be drawn as an overlay on top of the
  * tile map and tested for overlap with an entity's hitbox. Currently used for the player's starting
- * point (A) and the point the player has to reach (B).
+ * point (A), the point the player has to reach (B) and the fox den hidden event.
  * </p>
+ * <p>Requirements: UR_PLAYER_MISSION, FR_TASK, FR_HIDDEN_EVENTS</p>
  */
 public class GoalZone {
 

@@ -14,6 +14,7 @@ import uk.ac.york.eng1.geese.entities.Player;
  * position, sprite or hitbox of its own. No capacity limit is applied: with only two items
  * in the game, a cap would be dead logic.
  * </p>
+ * <p>Requirements: FR_INVENTORY</p>
  */
 public class Inventory {
 
@@ -78,6 +79,7 @@ public class Inventory {
 
     /**
      * Uses the first held item of the given type.
+     * <p>Requirements: FR_SELECT_ITEM, UR_GAME_CONTROLS</p>
      *
      * @param type The class of the item to use, such as Airhorn.class.
      * @param gameMap Passed to the item so its effect can reach the geese.

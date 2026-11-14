@@ -15,6 +15,7 @@ import uk.ac.york.eng1.geese.entities.Player;
  * <p>
  * extends AbstractNPC by implementing UpdateStatus to provide behaviour to the goose.
  * </p>
+ * <p>Requirements: UR_GEESE</p>
  */
 public class Goose extends AbstractNPC {
 
@@ -45,6 +46,8 @@ public class Goose extends AbstractNPC {
      * passed entity if it is within the vision of the goose, and updates its wandering behaviour if not. This only occurs
      * if the passed entity is a player.
      * Additionally, disguised players are ignored by the geese and not targeted
+     * <p>Requirements: UR_GEESE (tracks the player), FR_GEESE_AVOIDENCE (ignores a disguised player),
+     * FR_GEESE_REMOVAL (a scared goose runs away)</p>
      *
      */
     @Override
@@ -92,6 +95,8 @@ public class Goose extends AbstractNPC {
 
     /**
      * Makes the goose flee from the player until calm is called.
+     * <p>Requirements: UR_GEESE_DISPERSAL, UR_MECHANICS, FR_GEESE_REMOVAL, FR_VIOLENCE_PROHIBITED, QR_NON_VIOLENCE
+     * (geese are dispersed by being scared, never harmed)</p>
      */
     public void scare() {
         this.status = Status.SCARED;

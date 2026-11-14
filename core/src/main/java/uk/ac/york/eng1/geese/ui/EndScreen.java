@@ -11,7 +11,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 /**
  * Game over screen drawn in screen space on top of the frozen game world.
- * Shown when the player runs out of Yorkshire pudding.
+ * Shown when the player runs out of Yorkshire pudding, reaches goal B, or survives until the timer runs out.
+ * <p>Requirements: FR_TIME_END (ends the timed phase), FR_TASK (reaching B completes the task)</p>
  */
 public class EndScreen {
     /** How dark the overlay over the frozen world is (0 = invisible, 1 = solid black). */

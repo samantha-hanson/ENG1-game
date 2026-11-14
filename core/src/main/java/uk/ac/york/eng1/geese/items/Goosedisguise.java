@@ -11,6 +11,7 @@ import uk.ac.york.eng1.geese.entities.Player;
  *     Extends abstract items by changing the way the player appears as well as how the geese target the player.
  *     Once used it will change the player sprite to a disguised one, and once the effect ends the sprite reverts back to normal
  * </p>
+ * <p>Requirements: UR_ITEMS, UR_MECHANICS, FR_GEESE_AVOIDENCE (lets the player hide from the geese)</p>
  */
 
 public class Goosedisguise extends AbstractItems {
@@ -38,6 +39,8 @@ public class Goosedisguise extends AbstractItems {
     }
 
     /**
+     * Disguises the player: geese stop targeting them, their sprite changes to the disguise and they move slower.
+     * <p>Requirements: FR_GEESE_AVOIDENCE</p>
      *
      * @param gameMap Passed to the item so its effect can reach the geese.
      * @param player The player using the item.

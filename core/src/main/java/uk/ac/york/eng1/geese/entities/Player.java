@@ -14,6 +14,7 @@ import uk.ac.york.eng1.geese.GameMap;
  * <p>
  * extends AbstractEntity by adding a way for the player to move the character in the movePlayer method.
  * </p>
+ * <p>Requirements: UR_PLAYER</p>
  */
 public class Player extends AbstractEntity {
 
@@ -40,6 +41,7 @@ public class Player extends AbstractEntity {
      * a -> move player left.
      * d -> move player right.
      * The new position is then clamped to the world boundaries.
+     * <p>Requirements: UR_PLAYER_MOVEMENT, FR_MOVEMENT, QR_MOVEMENT_USABILITY, QR_NAVIGATE_MAP</p>
      *
      */
     public void movePlayer() {
@@ -65,6 +67,7 @@ public class Player extends AbstractEntity {
 
     /**
      * New inventory object
+     * <p>Requirements: FR_INVENTORY</p>
      */
     private final Inventory inventory = new Inventory();
 
@@ -81,6 +84,7 @@ public class Player extends AbstractEntity {
     //Is disguised behavior
     /**
      * Whether the player is currently wearing the goose disguise. Geese ignore a disguised player.
+     * <p>Requirements: FR_GEESE_AVOIDENCE</p>
      */
     private boolean isDisguised = false;
 
@@ -138,10 +142,16 @@ public class Player extends AbstractEntity {
     }
 
     // Food (health)
-    /** Maximum amount of Yorkshire pudding the player can hold. */
+    /**
+     * Maximum amount of Yorkshire pudding the player can hold.
+     * <p>Requirements: FR_BASE_DIFFICULTY, QR_BASE_DIFFICULTY</p>
+     */
     private static final int MAX_FOOD = 100;
 
-    /** Seconds the player is safe from further bites after a goose takes some food. */
+    /**
+     * Seconds the player is safe from further bites after a goose takes some food.
+     * <p>Requirements: FR_BASE_DIFFICULTY, QR_BASE_DIFFICULTY</p>
+     */
     private static final float BITE_COOLDOWN = 1f;
 
     private int food = MAX_FOOD;
@@ -160,6 +170,7 @@ public class Player extends AbstractEntity {
 
     /**
      * A goose takes some of the player's food. Ignored during the bite cooldown.
+     * <p>Requirements: UR_GEESE (geese obstruct the player by eating their food)</p>
      *
      * @param amount How much food is taken.
      * @return true if food was actually lost.

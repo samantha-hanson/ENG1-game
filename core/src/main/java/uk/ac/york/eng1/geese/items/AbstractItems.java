@@ -10,6 +10,7 @@ import uk.ac.york.eng1.geese.entities.Player;
  * <p>
  *     Holds the common attributes and methods shared between all items in the game
  * </p>
+ * <p>Requirements: UR_ITEMS, FR_ITEMS</p>
  */
 
 public abstract class AbstractItems {
@@ -67,6 +68,8 @@ public abstract class AbstractItems {
     // --------------- Methods ----------------
     /**
      *Method that actually activates the item to be used
+     * <p>Requirements: QR_ITEM_CONSISTENCY (every item is used through the same steps, so it behaves the same way
+     * each time)</p>
      * @param gameMap Gives the item access to the world to interact with the geese
      * @param player The player using the item
      * @return true if the item was used, false if it couldn't be

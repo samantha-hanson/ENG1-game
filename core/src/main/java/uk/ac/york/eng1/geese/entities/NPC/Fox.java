@@ -15,6 +15,7 @@ import java.util.List;
  * <p>
  * extends AbstractNPC by implementing UpdateStatus to provide behaviour to the fox.
  * </p>
+ * <p>Requirements: UR_HIDDEN_EVENTS, FR_HIDDEN_EVENTS (the fox is spawned by the fox den hidden event)</p>
  */
 
 public class Fox extends AbstractNPC{

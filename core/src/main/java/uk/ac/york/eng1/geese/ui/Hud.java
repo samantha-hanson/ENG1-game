@@ -13,6 +13,7 @@ import uk.ac.york.eng1.geese.items.AbstractItems;
 /**
  * Heads-up display drawn in screen space (it does not move with the world camera).
  * Shows the player's remaining Yorkshire pudding as a bar, and the inventory as a row of icons.
+ * <p>Requirements: UR_FEATURE_DISPLAY, QR_DISPLAY_RELIABILITY</p>
  */
 public class Hud {
     /** margin, width, height, icon size, and slot gap ui */
@@ -86,6 +87,7 @@ public class Hud {
     /**
      * Draws the inventory as a row of icons along the bottom-left of the screen.
      * Used-up items are greyed out, active items are tinted yellow, and each shows its uses left.
+     * <p>Requirements: FR_INVENTORY, UR_FEATURE_DISPLAY</p>
      *
      * @param batch The SpriteBatch to draw with (must already be between begin() and end()).
      * @param player The player whose inventory is displayed.

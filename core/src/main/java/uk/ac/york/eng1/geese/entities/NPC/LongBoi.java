@@ -13,6 +13,7 @@ import uk.ac.york.eng1.geese.entities.Player;
  * <p>
  * extends AbstractNPC by implementing UpdateStatus to provide behaviour to long boi.
  * </p>
+ * <p>Requirements: UR_HIDDEN_EVENTS, FR_HIDDEN_EVENTS (long boi appearing is one of the hidden events)</p>
  */
 
 public class LongBoi extends AbstractNPC{
