@@ -348,6 +348,8 @@ public class Main extends ApplicationAdapter {
         player.draw(batch);
         batch.end();
 
+
+
         // Check whether the player has reached B. The timer stops once the goal is reached.
         if (goalPoint!= null && !goalPoint.isReached() && goalPoint.isOccupiedBy(player)) {
             goalPoint.setReached(true);
@@ -355,6 +357,7 @@ public class Main extends ApplicationAdapter {
         }
 
         //----------HUD: 5-minute countdown timer in the top-right corner----------
+        hud.draw(batch, viewport, player);
         timer -= Gdx.graphics.getDeltaTime();
         if (goalPoint != null && goalPoint.isReached()) {
             endScreen.draw(batch, viewport, EndScreen.Result.REACHED_GOAL, TOTAL_TIME - timer);
