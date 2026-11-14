@@ -32,6 +32,10 @@ import uk.ac.york.eng1.geese.items.Goosedisguise;
 import uk.ac.york.eng1.geese.ui.Hud;
 import uk.ac.york.eng1.geese.ui.EndScreen;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import uk.ac.york.eng1.geese.entities.GoalZone;
+
 import java.util.Iterator;
 import java.util.Random;
 
@@ -91,6 +95,14 @@ public class Main extends ApplicationAdapter {
     private static final double SPAWN_RADIUS = 500;
     private static final Random RANDOM = new Random();
 
+    /** How the game ended; null while the game is still running. */
+    private EndScreen.Result result;
+
+    /** The zone the player has to reach to win, plus what's needed to draw it. */
+    private Texture zonePixel;
+    private BitmapFont zoneFont;
+    private GlyphLayout zoneLayout;
+
     private int gooseDisposeCounter = 0;
     @Override
     public void resize(int width, int height) {
@@ -105,6 +117,7 @@ public class Main extends ApplicationAdapter {
         long_boi_spawned = false;
         fox_spawned = false;
         gameOver = false;
+        result = null;
 
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
@@ -121,11 +134,27 @@ public class Main extends ApplicationAdapter {
         float unitScale = 5f;
         gameMap = new GameMap("park.tmx", unitScale);
 
+        // Goal zone B: a 3x3 tile block in the top-right corner of the map
+        Pixmap pixmap1 = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap1.setColor(Color.WHITE);
+        pixmap1.fill();
+        zonePixel = new Texture(pixmap1);
+        pixmap1.dispose();
+
+        zoneFont = new BitmapFont();
+        zoneFont.getData().setScale(2f);
+        zoneLayout = new GlyphLayout();
+
+        int[] mapSize = gameMap.getSizeInTiles();
+        goalPoint = new GoalZone(gameMap.getTileBounds(mapSize[0] - 4, 1, 3, 3), "B", Color.GREEN);
+
         // The player starts at A, in the centre of the bottom-left tile, and has to reach B.
         startPoint = new GoalZone(gameMap.getTileBounds(START_TILE_X, START_TILE_Y, 1, 1),
             "A", Color.SKY);
-        goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
-            "B", Color.MAGENTA);
+        if(gooseDisposeCounter >= 2) {
+            goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
+                "B", Color.MAGENTA);
+        }
 
 
         player = new Player(
@@ -267,10 +296,18 @@ public class Main extends ApplicationAdapter {
         //----------batch begins----------
         batch.begin();
         player.movePlayer();
-
         // Draw the start and goal markers beneath the entities so the player is always visible.
         startPoint.draw(batch, pixel, timerFont, markerLayout);
-        goalPoint.draw(batch, pixel, timerFont, markerLayout);
+
+        // Define goalPoint once score is reached -> DO NOT REINITIALISE
+        if(gooseDisposeCounter >= 2 && goalPoint == null) {
+            goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
+                "B", Color.MAGENTA);
+        }
+
+        if (goalPoint != null) {
+            goalPoint.draw(batch, pixel, timerFont, markerLayout);
+        }
 
         if(foxPoint != null){
             foxPoint.draw(batch, pixel, timerFont, markerLayout);
@@ -310,20 +347,22 @@ public class Main extends ApplicationAdapter {
 
         player.draw(batch);
         batch.end();
-        if (player.isOutOfFood()) {
-            gameOver = true;
-        }
-        hud.draw(batch, viewport, player);
-        //----------batch ends----------
+
+
 
         // Check whether the player has reached B. The timer stops once the goal is reached.
-        if (!goalPoint.isReached() && goalPoint.isOccupiedBy(player)) {
+        if (goalPoint!= null && !goalPoint.isReached() && goalPoint.isOccupiedBy(player)) {
             goalPoint.setReached(true);
             System.out.println("Player reached goal B");
         }
 
         //----------HUD: 5-minute countdown timer in the top-right corner----------
-        if (!goalPoint.isReached()) {
+        hud.draw(batch, viewport, player);
+        timer -= Gdx.graphics.getDeltaTime();
+        if (goalPoint != null && goalPoint.isReached()) {
+            endScreen.draw(batch, viewport, EndScreen.Result.REACHED_GOAL, TOTAL_TIME - timer);
+        }
+        if (goalPoint != null && !goalPoint.isReached()) {
             timer -= Gdx.graphics.getDeltaTime();
             if (timer < 0f) {
                 timer = 0f;
@@ -341,13 +380,13 @@ public class Main extends ApplicationAdapter {
             Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         batch.begin();
-
+        goalPoint.draw(batch, zonePixel, zoneFont, markerLayout);
         float padding = 20f;
         timerFont.draw(batch, timeText,
             Gdx.graphics.getWidth() - timerLayout.width - padding,
             Gdx.graphics.getHeight() - padding);
 
-        if (goalPoint.isReached()) {
+        if (goalPoint != null && goalPoint.isReached()) {
             String goalText = "Goal B reached!";
             markerLayout.setText(timerFont, goalText);
             timerFont.draw(batch, markerLayout,
@@ -355,6 +394,16 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getHeight() / 2f);
         }
         batch.end();
+        if (player.isOutOfFood()) {
+            gameOver = true;
+            result = EndScreen.Result.LOST;
+        } else if (goalPoint.isOccupiedBy(player)) {
+            gameOver = true;
+            result = EndScreen.Result.REACHED_GOAL;
+        } else if (timer <= 0f) {
+            gameOver = true;
+            result = EndScreen.Result.SURVIVED;
+        }
         //----------HUD ends----------
     }
 
@@ -376,7 +425,7 @@ public class Main extends ApplicationAdapter {
         batch.end();
 
         hud.draw(batch, viewport, player);
-        endScreen.draw(batch, viewport, TOTAL_TIME - timer);
+        endScreen.draw(batch, viewport, result, TOTAL_TIME - timer);
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
             restart();
@@ -401,6 +450,8 @@ public class Main extends ApplicationAdapter {
         player.getInventory().dispose();
         hud.dispose();
         endScreen.dispose();
+        zonePixel.dispose();
+        zoneFont.dispose();
 
         for (Goose goose: gameMap.getGeese()){
             goose.dispose();
