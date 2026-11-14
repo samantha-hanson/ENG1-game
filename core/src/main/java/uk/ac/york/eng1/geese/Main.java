@@ -71,6 +71,7 @@ public class Main extends ApplicationAdapter {
 
     private BitmapFont timerFont;
     private GlyphLayout timerLayout;
+    private GlyphLayout gooseDisposalLayout;
     private float timer;
 
     private EndScreen endScreen;
@@ -167,6 +168,9 @@ public class Main extends ApplicationAdapter {
         timerFont.getData().setScale(2f);
         timerLayout = new GlyphLayout();
         markerLayout = new GlyphLayout();
+
+        // Start the goose disposal counter from when the game begins.
+        gooseDisposalLayout = new GlyphLayout();
     }
 
     // Per frame behaviour
@@ -314,6 +318,9 @@ public class Main extends ApplicationAdapter {
         String timeText = String.format("%02d:%02d", minutes, seconds);
         timerLayout.setText(timerFont, timeText);
 
+        String gooseDisposalText = "Number of scared geese:" + String.valueOf(gooseDisposeCounter);
+        gooseDisposalLayout.setText(timerFont, gooseDisposalText);
+
         // Switch to screen coordinates so the timer stays fixed in the corner
         // of the window regardless of where the camera is.
         batch.getProjectionMatrix().setToOrtho2D(0, 0,
@@ -322,10 +329,17 @@ public class Main extends ApplicationAdapter {
         //----------hud batch begins----------
         batch.begin();
 
-        float padding = 20f;
+        // draw timer in top right corner.
+        float timerPadding = 20f;
         timerFont.draw(batch, timeText,
-            Gdx.graphics.getWidth() - timerLayout.width - padding,
-            Gdx.graphics.getHeight() - padding);
+            Gdx.graphics.getWidth() - timerLayout.width - timerPadding,
+            Gdx.graphics.getHeight() - timerPadding);
+
+        // draw goose disposal counter in top right corner.
+        float gooseDisposalPadding = 50f;
+        timerFont.draw(batch, gooseDisposalText,
+            Gdx.graphics.getWidth() - gooseDisposalLayout.width - gooseDisposalPadding,
+            Gdx.graphics.getHeight() - gooseDisposalPadding);
 
         if (gameMap.endZone != null && gameMap.endZone.isReached()) {
             String goalText = "Goal B reached!";
