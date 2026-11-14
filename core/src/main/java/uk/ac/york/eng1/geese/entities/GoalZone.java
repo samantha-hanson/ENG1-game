@@ -19,6 +19,9 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class GoalZone {
 
+    /**
+     * boolean flag suggesting whether or not GoalZone should be drawn - used to decide in GameMap.drawZones method.
+     */
     public boolean isDrawable;
 
     /**

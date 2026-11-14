@@ -141,7 +141,7 @@ public class Main extends ApplicationAdapter {
         zoneFont.getData().setScale(2f);
         zoneLayout = new GlyphLayout();
 
-        gameMap.endZone = new GoalZone(gameMap.getTileBounds(0, 3, 3, 3), "END ZONE", Color.GREEN, false);
+        gameMap.endZone = new GoalZone(gameMap.getTileBounds(0, 0, 3, 3), "END ZONE", Color.GREEN, false);
 
         // The player starts at A, in the centre of the bottom-left tile, and has to reach B.
         gameMap.startZone = new GoalZone(gameMap.getTileBounds(START_TILE_X, START_TILE_Y, 1, 1),
@@ -322,7 +322,7 @@ public class Main extends ApplicationAdapter {
         batch.getProjectionMatrix().setToOrtho2D(0, 0,
             Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        //----------hud batch begins - has no draw call----------
+        //----------hud batch begins----------
         batch.begin();
 
         float padding = 20f;
@@ -406,6 +406,7 @@ public class Main extends ApplicationAdapter {
         zonePixel.dispose();
         zoneFont.dispose();
 
+        player.dispose();
         for (Goose goose: gameMap.getGeese()){
             goose.dispose();
         }

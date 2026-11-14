@@ -207,14 +207,27 @@ public class GameMap {
         }
     }
 
+    /**
+     * Adds GoalZone zone to the hashmap, using label as the key.
+     * @param zone GoalZone to be added to stored regions.
+     */
     public void addZone(GoalZone zone){
         this.zones.put(zone.getLabel(), zone);
     }
 
+    /**
+     * fetches zone from the zones hashmap.
+     * @param label String key used to fetch the zone
+     * @return GoalZone fetched by map, null if key not found.
+     */
     public GoalZone getZone(String label){
         return this.zones.get(label);
     }
 
+    /**
+     * removes GoalZone stored by label from zones hashmap.
+     * @param label String key used to remove zone from hashmap.
+     */
     public void removeZone(String label){
         this.zones.remove(label);
     }
