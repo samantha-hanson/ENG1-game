@@ -1,6 +1,8 @@
 package uk.ac.york.eng1.geese.entities;
+import com.badlogic.gdx.Input;
 import uk.ac.york.eng1.geese.items.Inventory;
-
+import uk.ac.york.eng1.geese.items.Airhorn;
+import uk.ac.york.eng1.geese.items.Goosedisguise;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
@@ -61,6 +63,21 @@ public class Player extends AbstractEntity {
 
         this.gameMap.clampPosition(this.pos);
         this.hitbox.setPosition(this.pos);
+    }
+
+    /**
+     * Reads input from keyboard and calls use item accordingly.
+     * e -> air horn is used.
+     * q -> goose disguise is used
+     *
+     */
+    public void useItem(){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+            this.getInventory().useItem(Airhorn.class, gameMap, this);
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) {
+            this.getInventory().useItem(Goosedisguise.class, gameMap, this);
+        }
     }
 
     /**

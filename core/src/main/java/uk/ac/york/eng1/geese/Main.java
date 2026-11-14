@@ -258,13 +258,7 @@ public class Main extends ApplicationAdapter {
 
 
         // Use items
-        // gameMap is now passed because Inventory.useItem needs it for the item's effect
-        if (Gdx.input.isKeyJustPressed(Input .Keys.E)) {
-            player.getInventory().useItem(Airhorn.class, gameMap, player);
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) {
-            player.getInventory().useItem(Goosedisguise.class, gameMap, player);
-        }
+        player.useItem();
 
         // Tick timed item effects once per frame
         // Fixed: gameMap and player are now passed because items need them to end their effects
