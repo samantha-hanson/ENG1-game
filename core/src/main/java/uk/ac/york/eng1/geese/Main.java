@@ -104,6 +104,11 @@ public class Main extends ApplicationAdapter {
     private GlyphLayout zoneLayout;
 
     private int gooseDisposeCounter = 0;
+
+    // Variables for ending the game
+    private float minDisposeCount = 0f;
+    private  boolean endConditionsMet = false;
+
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -146,16 +151,11 @@ public class Main extends ApplicationAdapter {
         zoneLayout = new GlyphLayout();
 
         int[] mapSize = gameMap.getSizeInTiles();
-        goalPoint = new GoalZone(gameMap.getTileBounds(mapSize[0] - 4, 1, 3, 3), "B", Color.GREEN);
+        goalPoint = new GoalZone(gameMap.getTileBounds(0, 3, 3, 3), "TEST GOAL A", Color.GREEN);
 
         // The player starts at A, in the centre of the bottom-left tile, and has to reach B.
         startPoint = new GoalZone(gameMap.getTileBounds(START_TILE_X, START_TILE_Y, 1, 1),
-            "A", Color.SKY);
-        if(gooseDisposeCounter >= 2) {
-            goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
-                "B", Color.MAGENTA);
-        }
-
+            "Start point", Color.SKY);
 
         player = new Player(
             startPoint.getCentre().x,
@@ -228,8 +228,6 @@ public class Main extends ApplicationAdapter {
                 System.out.println("fox has spawned!");
             }
         }
-
-
         // ---spawn logic ends---
 
         // Load map and set up camera
@@ -299,16 +297,6 @@ public class Main extends ApplicationAdapter {
         // Draw the start and goal markers beneath the entities so the player is always visible.
         startPoint.draw(batch, pixel, timerFont, markerLayout);
 
-        // Define goalPoint once score is reached -> DO NOT REINITIALISE
-        if(gooseDisposeCounter >= 2 && goalPoint == null) {
-            goalPoint = new GoalZone(gameMap.getTileBounds(GOAL_TILE_X, GOAL_TILE_Y, GOAL_TILES_WIDE, GOAL_TILES_TALL),
-                "B", Color.MAGENTA);
-        }
-
-        if (goalPoint != null) {
-            goalPoint.draw(batch, pixel, timerFont, markerLayout);
-        }
-
         if(foxPoint != null){
             foxPoint.draw(batch, pixel, timerFont, markerLayout);
         }
@@ -345,16 +333,13 @@ public class Main extends ApplicationAdapter {
             fox.draw(batch);
         }
 
+        if(endConditionsMet){
+            goalPoint.draw(batch, zonePixel, zoneFont, markerLayout);
+        }
+
         player.draw(batch);
         batch.end();
-
-
-
-        // Check whether the player has reached B. The timer stops once the goal is reached.
-        if (goalPoint!= null && !goalPoint.isReached() && goalPoint.isOccupiedBy(player)) {
-            goalPoint.setReached(true);
-            System.out.println("Player reached goal B");
-        }
+        //----------batch end----------
 
         //----------HUD: 5-minute countdown timer in the top-right corner----------
         hud.draw(batch, viewport, player);
@@ -379,8 +364,9 @@ public class Main extends ApplicationAdapter {
         batch.getProjectionMatrix().setToOrtho2D(0, 0,
             Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
+        //----------hud batch begins - has no draw call----------
         batch.begin();
-        goalPoint.draw(batch, zonePixel, zoneFont, markerLayout);
+
         float padding = 20f;
         timerFont.draw(batch, timeText,
             Gdx.graphics.getWidth() - timerLayout.width - padding,
@@ -394,17 +380,26 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getHeight() / 2f);
         }
         batch.end();
+        //----------hud batch ends----------
+
         if (player.isOutOfFood()) {
             gameOver = true;
             result = EndScreen.Result.LOST;
-        } else if (goalPoint.isOccupiedBy(player)) {
+
+        } else if (goalPoint.isOccupiedBy(player) && endConditionsMet) {
+            goalPoint.setReached(true);
             gameOver = true;
             result = EndScreen.Result.REACHED_GOAL;
+
         } else if (timer <= 0f) {
             gameOver = true;
             result = EndScreen.Result.SURVIVED;
         }
-        //----------HUD ends----------
+
+        //-------------------------Check if conditions for end of game have been met-------------------------
+        if(gooseDisposeCounter >= minDisposeCount){
+            endConditionsMet = true;
+        }
     }
 
     /** Draws the frozen world with the end screen on top, and listens for restart/quit. */
